@@ -69,14 +69,20 @@
 (actualizarListaJugadores (bCEj 3))
 listaJugadores
 crupier
+"Se barajan las cartas"
+(actualizarMazo (shuffle mazo))
 "Ahora se reparten las primeras dos cartas"
-(actualizarListaJugadores (reparte-cartas listaJugadores (shuffle mazo)))
-(actualizarListaJugadores (reparte-cartas listaJugadores (shuffle mazo)))
+(actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+(actualizarMazo (cdddr mazo))
+(actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+(actualizarMazo (cdddr mazo))
 listaJugadores
 "Ahora se reparten las primeras dos cartas del crupier"
 
-(actualizarCrupier (dar-carta crupier (shuffle mazo)))
-(actualizarCrupier (dar-carta crupier (shuffle mazo)))
+(actualizarCrupier (dar-carta crupier  mazo))
+(actualizarMazo (cdr mazo))
+(actualizarCrupier (dar-carta crupier  mazo))
+(actualizarMazo (cdr mazo))
 crupier
 
 ;crupier
