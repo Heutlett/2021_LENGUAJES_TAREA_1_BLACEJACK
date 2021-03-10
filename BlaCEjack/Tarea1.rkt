@@ -28,10 +28,6 @@
         (else
           (tamano-lista-aux (+ x 1) (cdr lista)))))
 
-'(Prueba tamaño lista)
-(tamano-lista '(a b c))
-(tamano-lista '(b c d b))
-
 
 ;; Funcion miembro
 ;; Recibe un elemento y una lista y busca
@@ -53,10 +49,6 @@
          #t)
         (else
           (miembro-aux x (cdr lista)))))
-
-'(Prueba miembro)
-(miembro? 'a '(a b c))
-(miembro? 'a '(b c d))
 
 ;; Funcion eliminar
 ;; Recibe un elemento y una lista y busca
@@ -85,9 +77,6 @@
         (else
          (ordena-final (cdr lista) (cons (car lista) listaFinal)))))
 
-'(prueba eliminar)
-(eliminar 'a '(a b c))
-(eliminar 'a '(b c d))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -111,16 +100,17 @@
 ;; 11 : J
 ;; 12 : Q
 ;; 13 : K
-(define mazo '(C1 C2 C3 C4 C5 C6 C7 C8 C9 C10 C11 C12 C13
-                 D1 D2 D3 D4 D5 D6 D7 D8 D9 D10 D11 D12 D13 
-                 P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 P13
-                 T1 T2 T3 T4 T5 T6 T7 T8 T9 T10 T11 T12 T13))
+(define mazo '((C 1) (C 2) (C 3) (C 4) (C 5) (C 6) (C 7) (C 8) (C 9) (C 10) (C 11) (C 12) (C 13)
+                 (D 1) (D 2) (D 3) (D 4) (D 5) (D 6) (D 7) (D 8) (D 9) (D 10) (D 11) (D 12) (D 13) 
+                 (P 1) (P 2) (P 3) (P 4) (P 5) (P 6) (P 7) (P 8) (P 9) (P 10) (P 11) (P 12) (P 13)
+                 (T 1) (T 2) (T 3) (T 4) (T 5) (T 6) (T 7) (T 8) (T 9) (T 10) (T 11) (T 12) (T 13)))
 
 
 ;; Funcion bCEj
 ;; Inicia el juego con la cantidad de jugadores que se ingresen como parametro
 ;; Entradas: x = numero de jugadores
 ;; Salida: inicia el juego
+
 
 (define (bCEj X)
   (cond ((integer? X)
@@ -136,13 +126,41 @@
          '(Ha ingresado un valor incorrecto, por favor ingrese un valor del 1 al 3))))
 
 
+;; Dar una carta al jugador pasado por parametro
+
+(define (dar-carta jugador mazo)
+  (append jugador (list (car mazo))))
+
+ 
+;; Reparte una carta a cada jugador
+
+(define (reparte-cartas listaJugadores mazo resultado)
+  (cond ((null? listaJugadores)
+         resultado)
+        (else
+         (reparte-cartas (cdr listaJugadores) (cdr mazo) (append resultado (list (dar-carta (car listaJugadores) mazo)))   ))))
+
+
+;; Verifica la condicion de un jugador con respecto a su puntuacion
+
+;;(define (verificar-condicion jugador)
+;;  (
+
+
+;; Calcula la puntuacion del jugador sumando carta a carta
+
+(define (calcula-puntuacion jugador resultado)
+  (cond ((null? jugador)
+         resultado)
+        (else
+         (calcula-puntuacion (cdr jugador) (+ (cadar jugador) resultado)))))
+
+;; Verifica si el jugador tiene un blackjack
 
 
 
 
 
-
-
-
+(reparte-cartas '(( (A 1) (A 5)) ((A 2) (D 1)) ((A 3) (P 4))) mazo '())
 
 
