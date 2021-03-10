@@ -153,10 +153,9 @@
   (cond ((null? jugador)
          resultado)
         (else
-         (calcula-puntuacion (cdr jugador) (+ (cadar jugador) resultado)))))
+         (calcula-puntuacion (cdr jugador) (+ (cadar jugador) resultado)))))  ;; Arreglar que sume solo 10 en caso de ser J, Q, K o sea pares ordenados (X 11) (X 12) (X 13)
 
 ;; Verifica si el jugador tiene un blackjack
-
 
 
 
