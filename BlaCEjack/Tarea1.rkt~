@@ -110,6 +110,8 @@
 ;; Inicia el juego con la cantidad de jugadores que se ingresen como parametro
 ;; Entradas: x = numero de jugadores
 ;; Salida: inicia el juego
+
+
 (define (bCEj X)
   (cond ((integer? X)
          (cond ((= 1 X)
@@ -125,88 +127,39 @@
 
 
 ;; Dar una carta al jugador pasado por parametro
+
 (define (dar-carta jugador mazo)
   (append jugador (list (car mazo))))
 
  
 ;; Reparte una carta a cada jugador
+
 (define (reparte-cartas listaJugadores mazo resultado)
   (cond ((null? listaJugadores)
          resultado)
         (else
          (reparte-cartas (cdr listaJugadores) (cdr mazo) (append resultado (list (dar-carta (car listaJugadores) mazo)))   ))))
 
-;; getLetter
-;; Retorna la letra del par ordenada de la carta.
-;; Input: pair - par con la letra y el valor.
-;; Output: letra del par.
-(define (getLetter pair)
-  (car pair))
 
-;; getValue
-;; Retorna la numero del par ordenada de la carta.
-;; Input: pair - par con la letra y el valor.
-;; Output: valor del par.
-(define (getValue pair)
-  (cadr pair))
+;; Verifica la condicion de un jugador con respecto a su puntuacion
 
-;; getCardsTotalValue
-;; Retorna la suma total de todas las cartas del jugador,tomando en cuenta todas las particularidades del juego.
-;; Input: playerCards - cartas del jugador.
-;; Output: suma total de las cartas.
-(define (getCardsTotalValue playerCards)
-  (cond [(null? playerCards) 0]
-        [(blackjack? playerCards) "BlackJack-21"]
-        [else (cardsTotalValue_aux playerCards 0)]))
-(define (cardsTotalValue_aux playerCards total)
-  (cond [(null? playerCards) total]
-        [else ;recorre la lista de cartas y suma al total el valor de la carta actual.
-         (cardsTotalValue_aux (cdr playerCards) (+ total (checkCardValue (getValue (car playerCards)) total)))]))
+;;(define (verificar-condicion jugador)
+;;  (
 
-;; blackjack?
-;; Verifica si la suma de las cartas de un jugador es blackjack.
-;; Input: playerCards - cartas del jugador.
-;; Output: #t si se cumple BlackJack, #f si no.
-(define (blackjack? playerCards)
-  (cond [(not (= 2 (length playerCards))) #f]
-        ;si la primera carta es K-Q-J y la segunda un As -> #t
-        [(and (< 10 (getValue(car playerCards))) (= 1 (getValue (cadr playerCards)))) #t]
-        ;si la primera carta es un As y la segunda K-Q-J. -> #t
-        [(and (= 1 (getValue(car playerCards))) (< 10 (getValue (cadr playerCards)))) #t]
-        [else #f]))
 
-;; checkCardValue
-;; Retorna el valor de la carta, ya sea si es un As (analizando el puntaje actual), una letra o un valor normal.
-;; Input: playerCards - cartas del jugador.
-;; Output: valor de la carta.
-(define (checkCardValue value total)
-  (cond [(< 10 value) 10] ;(K-J-Q) - valen 10
-        [(and (= 1 value) (>= 21 (+ total 11))) 11] ;As - vale 11 (cuando si se suma es igual o menor a 21).
-        [else value])) ;(2-3-4-5-6-7-8-9-10) - valen su normal.
+;; Calcula la puntuacion del jugador sumando carta a carta
+
+(define (calcula-puntuacion jugador resultado)
+  (cond ((null? jugador)
+         resultado)
+        (else
+         (calcula-puntuacion (cdr jugador) (+ (cadar jugador) resultado)))))  ;; Arreglar que sume solo 10 en caso de ser J, Q, K o sea pares ordenados (X 11) (X 12) (X 13)
+
+;; Verifica si el jugador tiene un blackjack
 
 
 
-;-------------------Pruebas-------------------
 
-;(calcula-puntuacion '((A 1) (A 5) (C 1)) 0)
-;(reparte-cartas '(( (A 1) (A 5)) ((A 2) (D 1)) ((A 3) (P 4))) mazo '())
-
-
-;(blackjack? '((A 1) (A 11)))
-;(blackjack? '((A 12) (A 1)))
-;(blackjack? '((A 13) (A 13)))
-
-;(checkCardValue 11 0)
-;(checkCardValue 1 10)
-;(checkCardValue 1 11)
-;(checkCardValue 3 10)
-
-;(cardsTotalValue '((C 1) (A 5) (C 1))) ;17
-;(cardsTotalValue '((C 1) (A 13) (C 1))) ;22
-;(cardsTotalValue '((C 11) (A 1))) ;BlackJack
-;(cardsTotalValue '((D 12) (A 13) (C 1))) ;21
-;(cardsTotalValue '((D 1) (D 1) (D 1))) ;13
-
-
+(reparte-cartas '(( (A 1) (A 5)) ((A 2) (D 1)) ((A 3) (P 4))) mazo '())
 
 
