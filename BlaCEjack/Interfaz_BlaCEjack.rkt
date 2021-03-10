@@ -38,7 +38,7 @@
 
 ;; Crupier del juego actual
 
-(define crupier '())
+(define crupier (crea-crupier))
 
 ; Función que actualiza el crupier al momento actual
 
@@ -65,20 +65,19 @@
 
 
 "Simulacion juego del juego"
-"Se inicia con tres jugadores"
+"Se inicia con tres jugadores sin cartas y el crupier"
 (actualizarListaJugadores (bCEj 3))
 listaJugadores
-
-(actualizarListaJugadores (reparte-cartas listaJugadores (shuffle mazo)))
-listaJugadores
-(actualizarListaJugadores (reparte-cartas listaJugadores (shuffle mazo)))
-listaJugadores
-(actualizarListaJugadores (reparte-cartas listaJugadores (shuffle mazo)))
-listaJugadores
-(actualizarListaJugadores (reparte-cartas listaJugadores (shuffle mazo)))
-listaJugadores
+crupier
 "Ahora se reparten las primeras dos cartas"
+(actualizarListaJugadores (reparte-cartas listaJugadores (shuffle mazo)))
+(actualizarListaJugadores (reparte-cartas listaJugadores (shuffle mazo)))
+listaJugadores
+"Ahora se reparten las primeras dos cartas del crupier"
 
+(actualizarCrupier (dar-carta crupier (shuffle mazo)))
+(actualizarCrupier (dar-carta crupier (shuffle mazo)))
+crupier
 
 ;crupier
 ;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))

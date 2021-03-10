@@ -7,7 +7,8 @@
 (provide turno-crupier)   ;; Parametros: crupierDeck, mazo
 (provide bCEj)            ;; Parametros: cantidad de jugadores, de 1 a 3
 (provide reparte-cartas)  ;; Parametros: lista de jugadores, mazo
-(provide dar-carta-jugador) ;; ;; Parametros: nombre del jugador, listaDeJugadores, mazo
+(provide dar-carta) ;; ;; Parametros: nombre del jugador, listaDeJugadores, mazo
+(provide crea-crupier)
 
 ;; #################################################################################
 ;; #################################################################################
@@ -113,6 +114,13 @@
                  (T 1) (T 2) (T 3) (T 4) (T 5) (T 6) (T 7) (T 8) (T 9) (T 10) (T 11) (T 12) (T 13)))
 
 
+;; Funcion crea-crupier
+;; Crea al crupier en su estado inicial
+
+(define (crea-crupier)
+  ' ("crupier" 0 ()) )
+
+
 ;; Funcion bCEj
 ;; Inicia el juego con la cantidad de jugadores que se ingresen como parametro
 ;; Entradas: x = numero de jugadores
@@ -133,12 +141,10 @@
 
 ;; Estructura jugador:    ( "nombre" puntuacion '(lista cartas) )
 
-
-;; respaldo dar car
-; (define (dar-carta jugador mazo)
-;  (append (list (car jugador) (cadr jugador)) (list (append  (car (cdaddr jugador     ))  (list (car mazo))) )    ))
-
-;; Dar una carta al jugador pasado por parametro y devuelve ese mismo jugador modificado
+;; Funcion dar-carta
+;; Da una carta al jugador pasado por parametro y devuelve ese mismo jugador modificado con su nueva carta.
+;; Entradas: jugador de la forma: ( "nombre" puntuacion '(lista cartas) )
+;; Salida: el mismo jugador pero con la nueva carta = ( "nombre" puntuacion '(lista cartas + carta nueva) )
 (define (dar-carta jugador mazo)
   (cond ((null? (caddr jugador))
          (append (list (car jugador) (cadr jugador)) (list (append  '( )  (list (car mazo))))    ))
@@ -147,7 +153,9 @@
 
 ;(dar-carta '("jugador2" 0 '((A 3) (A 4))) mazo)        
 
-;; Da una carta a un jugador y devuelve la lista de jugadores actualizada
+;; Funcion dar-carta-jugador
+;; Da una carta a un jugador y devuelve la lista con todos los jugadores y el jugador con la carta nueva actualizado
+;; Entradas: jugador = nombre del jugador "jugador", listaJugadores, mazo
 (define (dar-carta-jugador jugador listaJugadores mazo)
   (dar-carta-jugador-aux jugador listaJugadores mazo '()))
 
@@ -161,8 +169,13 @@
          (dar-carta-jugador-aux jugador (cdr listaJugadores) mazo (append resultado (list(car listaJugadores)))))))
 
 ;(dar-carta-jugador "jugador1" '(("jugador1" 0 '((A 1) (A 3))) ("jugador2" 0 '()) ("jugador3" 0 '())) mazo)
- 
-;; Reparte una carta a cada jugador
+
+;; Funcion reparte-cartas
+;; Reparte una carta a cada jugador y devuelve la lista con todos los jugadores actualizada con su carta nueva
+;; cada uno
+;; Entradas: listaJugadores, mazo
+;; Salida: listaJugadores actualizada
+
 (define (reparte-cartas listaJugadores mazo)
   (reparte-cartas-aux listaJugadores mazo '()))
 
@@ -173,13 +186,9 @@
         (else
          (reparte-cartas-aux (cdr listaJugadores) (cdr mazo) (append resultado (list (dar-carta (car listaJugadores) mazo)))   ))))
 
-"Prueba logica"
-(reparte-cartas '(("jugador1" 0 ()) ("jugador2" 0 ()) ("jugador3" 0 ())) mazo)
-"Prueba logica"
+;(reparte-cartas '(("jugador1" 0 ()) ("jugador2" 0 ()) ("jugador3" 0 ())) mazo)
 
-"Prueba interfaz"
-(reparte-cartas '(("jugador1" 0 ((P 5))) ("jugador2" 0 ((C 12))) ("jugador3" 0 ((D 8)))) mazo)
-"Prueba interfaz"
+;(reparte-cartas '(("jugador1" 0 ((P 5))) ("jugador2" 0 ((C 12))) ("jugador3" 0 ((D 8)))) mazo)
 
 ;; getLetter
 ;; Retorna la letra del par ordenada de la carta.
@@ -228,6 +237,9 @@
   (cond [(< 10 value) 10] ;(K-J-Q) - valen 10
         [(and (= 1 value) (>= 21 (+ total 11))) 11] ;As - vale 11 (cuando si se suma es igual o menor a 21).
         [else value])) ;(2-3-4-5-6-7-8-9-10) - valen su normal.
+
+
+;(dar-carta '("crupier" 0 ()) mazo)        
 
 
 ;; Turno crupier
