@@ -1,0 +1,3 @@
+1. Se puede usar length?
+2. Se puede usar shuffle?
+3. Preguntar si es estricto que las cartas de cada turno dependan de las que salieron en el turno anterior.
