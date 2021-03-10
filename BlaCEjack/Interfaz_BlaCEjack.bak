@@ -1,0 +1,48 @@
+#lang racket
+; Interfaz
+
+(require racket/gui)
+(require racket/include)
+
+(require "Tarea1.rkt")
+
+;Condición de que el juego comenzó
+(define gameStart #f)
+
+; Función que dice si el juego comenzó o no
+
+(define (asignar_gameStart bool)
+    (set! gameStart (cons bool gameStart))
+)
+
+;; ############################################################################
+;; Variables de la interfaz
+;; ############################################################################
+
+
+;; Crupier del juego actual
+
+(define cruepier '())
+
+; Función que actualiza el crupier al momento actual
+
+(define (actualizarCrupier nuevoCrupier)
+    (set! cruepier nuevoCrupier)
+)
+
+; Lista de jugadores del juego actual
+(define listaJugadores '())
+
+; Función que actualiza la lista de jugadores del juego actual
+
+(define (actualizarListaJugadores lista)
+    (set! listaJugadores lista)
+)
+
+;; Pruebas para manejar las variables
+
+;; listaJugadores
+
+;; (actualizarListaJugadores '( ((A 1) (A 5)) ((A 2) (D 1)) ((A 3) (P 4)) ))
+
+;; listaJugadores

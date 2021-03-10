@@ -170,9 +170,9 @@
 (define (blackjack? playerCards)
   (cond [(not (= 2 (length playerCards))) #f]
         ;si la primera carta es K-Q-J y la segunda un As -> #t
-        [(and (< 10 (getValue(car playerCards))) (= 1 (getValue (cadr playerCards)))) #t]
+        [(and (<= 10 (getValue(car playerCards))) (= 1 (getValue (cadr playerCards)))) #t]
         ;si la primera carta es un As y la segunda K-Q-J. -> #t
-        [(and (= 1 (getValue(car playerCards))) (< 10 (getValue (cadr playerCards)))) #t]
+        [(and (= 1 (getValue(car playerCards))) (<= 10 (getValue (cadr playerCards)))) #t]
         [else #f]))
 
 ;; checkCardValue
@@ -186,13 +186,33 @@
 
 
 
+
+
+
+
+;; Turno crupier
+;; Analiza si la puntuacion del crupier es menor a 16 para solicitar otra carta
+;; o de lo contrario plantarse
+
+(define (turno-crupier crupierDeck mazo)
+  (cond ((equal? (getCardsTotalValue crupierDeck) "BlackJack-21")
+         "Gana el crupier con BlackJack-21")
+        ((<= (getCardsTotalValue crupierDeck) 16)
+         (dar-carta crupierDeck mazo))
+        (else
+         (append (list "El crupier se planta con") (list (getCardsTotalValue crupierDeck))))))
+
+
+
+
+
 ;-------------------Pruebas-------------------
 
-;(calcula-puntuacion '((A 1) (A 5) (C 1)) 0)
 ;(reparte-cartas '(( (A 1) (A 5)) ((A 2) (D 1)) ((A 3) (P 4))) mazo '())
 
 
-;(blackjack? '((A 1) (A 11)))
+
+;(blackjack? '((C 1) (P 11)))
 ;(blackjack? '((A 12) (A 1)))
 ;(blackjack? '((A 13) (A 13)))
 
@@ -201,12 +221,14 @@
 ;(checkCardValue 1 11)
 ;(checkCardValue 3 10)
 
-;(cardsTotalValue '((C 1) (A 5) (C 1))) ;17
-;(cardsTotalValue '((C 1) (A 13) (C 1))) ;22
-;(cardsTotalValue '((C 11) (A 1))) ;BlackJack
-;(cardsTotalValue '((D 12) (A 13) (C 1))) ;21
-;(cardsTotalValue '((D 1) (D 1) (D 1))) ;13
+;(getCardsTotalValue '((C 1) (A 5) (C 1))) ;17
+;(getCardsTotalValue '((C 1) (A 13) (C 1))) ;22
+;(getCardsTotalValue '((C 11) (A 1))) ;BlackJack
+;(getCardsTotalValue '((D 12) (A 13) (C 1))) ;21
+;(getCardsTotalValue '((D 1) (D 1) (D 1))) ;13
 
-
-
+;(turno-crupier '((C 1) (A 5) (C 1)) (shuffle mazo))
+;(turno-crupier '((C 1) (A 2) (P 1)) (shuffle mazo))
+;(turno-crupier '((C 1) (A 2) (P 1) (H 1)) (shuffle mazo))
+;(turno-crupier '((C 1) (A 9)) (shuffle mazo))
 
