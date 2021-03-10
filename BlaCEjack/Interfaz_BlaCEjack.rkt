@@ -71,7 +71,7 @@ listaJugadores
 crupier
 "Se barajan las cartas"
 (actualizarMazo (shuffle mazo))
-"Ahora se reparten las primeras dos cartas"
+"Ahora se reparten las primeras dos cartas a los jugadores"
 (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
 (actualizarMazo (cdddr mazo))
 (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
@@ -84,6 +84,8 @@ listaJugadores
 (actualizarCrupier (dar-carta crupier  mazo))
 (actualizarMazo (cdr mazo))
 crupier
+
+
 
 ;crupier
 ;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))
