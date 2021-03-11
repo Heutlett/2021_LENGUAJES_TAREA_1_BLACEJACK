@@ -204,35 +204,13 @@
 (define (getValue pair)
   (cadr pair))
 
-;; getPlayerName
-;; Retorna el nombre del jugador.
-;; Input: player - jugador.
-;; Output: nombre del jugador.
-(define (getPlayerName player)
-  (car player))
-
-;; getPlayerScore
-;; Retorna el puntaje actual del jugador.
-;; Input: player - jugador.
-;; Output: puntaje del jugador.
-(define (getPlayerScore player)
-  (cadr player))
-
-;; getPlayerDeck
-;; Retorna el mazo de cartas del jugador.
-;; Input: player - jugador.
-;; Output: mazo de cartas del jugador.
-(define (getPlayerDeck player)
-  (caddr player))
-
-
 ;; getCardsTotalValue
 ;; Retorna la suma total de todas las cartas del jugador,tomando en cuenta todas las particularidades del juego.
 ;; Input: playerCards - cartas del jugador.
 ;; Output: suma total de las cartas.
 (define (getCardsTotalValue playerCards)
   (cond [(null? playerCards) 0]
-        [(blackjack? playerCards) "Black-Jack"]
+        [(blackjack? playerCards) "BlackJack-21"]
         [else (cardsTotalValue_aux playerCards 0)]))
 (define (cardsTotalValue_aux playerCards total)
   (cond [(null? playerCards) total]
@@ -260,56 +238,27 @@
         [(and (= 1 value) (>= 21 (+ total 11))) 11] ;As - vale 11 (cuando si se suma es igual o menor a 21).
         [else value])) ;(2-3-4-5-6-7-8-9-10) - valen su normal.
 
+
+;(dar-carta '("crupier" 0 ()) mazo)        
+
+
 ;; Turno crupier
 ;; Analiza si la puntuacion del crupier es menor a 16 para solicitar otra carta
 ;; o de lo contrario plantarse
+
 (define (turno-crupier crupierDeck mazo)
-  (cond ((equal? (getCardsTotalValue crupierDeck) "Black-Jack")
+  (cond ((equal? (getCardsTotalValue crupierDeck) "BlackJack-21")
          (crupierDeck ))
         ((<= (getCardsTotalValue crupierDeck) 16)
          (dar-carta crupierDeck mazo))
         (else
          crupierDeck)))
 
-;; updateScores
-;; Actualiza los puntajes de los jugadores y el crupier.
-;; Input: player - jugador.
-;; Output: lista correspondiente al jugador con su puntuación actualizada.
-(define (updateScore player)
-  (list (getPlayerName player) (getCardsTotalValue (getPlayerDeck player)) (getPlayerDeck player)))
-
-;; winners?
-;; Retorna el ganador o los ganadores de la ronda.
-;; Input: playersList - lista de jugadores, crupier - casa.
-;; Output: lista con los ganadores de la ronda.
-(define (winners? playersList crupier)
-  (cond ((null? playersList) "No hay jugadores")
-        [(equal? "Black-Jack" (getPlayerScore crupier)) (~a (getPlayerName crupier) " gana con " (getPlayerScore crupier))] ;si la casa tiene blackjack, gana la casa.
-        (else (winners?_aux playersList crupier '()))))
-
-(define (winners?_aux playersList crupier winnersList)
-  (cond [(and (null? playersList) (null? winnersList)) (~a (getPlayerName crupier) " gana con " (getPlayerScore crupier))]
-        [(and (null? playersList) (not (null? winnersList))) winnersList] ;(~a "Gana(n) " winnersList)]
-        [else (winners?_aux (cdr playersList) crupier [append winnersList (victoryCondition (car playersList) crupier)]
-   )]))                                            ;; (append '() '(("Player1" 10) ("Player2" 20)))
-
-;; victoryCondition
-;; Compara las puntuaciones y retorna una tupla con el nombre del jugador y el puntaje, si este le gana al crupier.
-;; Input: player - jugador, crupier - casa.
-;; Output: Lista con tupla con el nombre del jugador y el puntaje, si gana. Nada, si pierde.
-(define (victoryCondition player crupier)
-  (cond
-    [(equal? "Black-Jack" (getPlayerScore player)) (list (list (getPlayerName player) (getPlayerScore player)))] ;si el jugaodr tiene blackjack, gana.
-    [(< 21 (getPlayerScore player)) '()] ;si se pasa de 21, pierde.
-    [(< (getPlayerScore crupier) (getPlayerScore player)) (list (list (getPlayerName player) (getPlayerScore player)))] ;si tiene mas que el crupier, gana.
-    [else '()]))
-
-
 ;-------------------Pruebas-------------------
 
 ;(reparte-cartas '(( (A 1) (A 5)) ((A 2) (D 1)) ((A 3) (P 4))) (shuffle mazo) )
 
-;(dar-carta '("crupier" 0 ()) mazo)        
+
 
 ;(blackjack? '((C 1) (P 11)))
 ;(blackjack? '((A 12) (A 1)))
@@ -319,9 +268,6 @@
 ;(checkCardValue 1 10)
 ;(checkCardValue 1 11)
 ;(checkCardValue 3 10)
-
-;(getPlayerScore (car listaPlayers))
-;(getPlayerDeck (car listaPlayers))
 
 ;(getCardsTotalValue '((C 1) (A 5) (C 1))) ;17
 ;(getCardsTotalValue '((C 1) (A 13) (C 1))) ;22
@@ -334,12 +280,3 @@
 ;(turno-crupier '((C 1) (A 2) (P 1) (H 1)) (shuffle mazo))
 ;(turno-crupier '((C 1) (A 9)) (shuffle mazo))
 
-
-(define listPlayers  '(("Player1" 0 ((A 1) (C 12))) ("Player2" 0 ((A 1) (C 5))) ("Player3" 0 ((A 1) (C 8)))))
-(define crupier  '("Crupier" "Black-Jack" ((D 11) (C 9))))
-;(victoryCondition (cadr listPlayers) crupier)
-;(winners? listPlayers crupier)
-
-(updateScore '("Player1" 0 ((A 1) (C 12))))
-(updateScore '("Player2" 0 ((A 2) (C 5))))
-(updateScore '("Player3" 0 ((A 3) (C 12))))
