@@ -7,8 +7,9 @@
 (provide turno-crupier)   ;; Parametros: crupierDeck, mazo
 (provide bCEj)            ;; Parametros: cantidad de jugadores, de 1 a 3
 (provide reparte-cartas)  ;; Parametros: lista de jugadores, mazo
-(provide dar-carta) ;; ;; Parametros: nombre del jugador, listaDeJugadores, mazo
+(provide dar-carta)       ;; Parametros: nombre del jugador, listaDeJugadores, mazo
 (provide crea-crupier)
+(provide nextTurn)        ;;Parametros: lista del jugador
 
 ;; #################################################################################
 ;; #################################################################################
@@ -304,6 +305,13 @@
     [(< (getPlayerScore crupier) (getPlayerScore player)) (list (list (getPlayerName player) (getPlayerScore player)))] ;si tiene mas que el crupier, gana.
     [else '()]))
 
+;; nextTurn
+;; Función que verifica si las cartas visibles del jugador suman o se pasan de 21.
+;; Input: player - jugador.
+;; Output: #f si no se pasa, #t si es 21 o se pasa.
+(define (nextTurn player)
+  (cond [(<= 21 [getCardsTotalValue (cdr (getPlayerDeck player))]) #t]
+        [else #f]))
 
 ;-------------------Pruebas-------------------
 
