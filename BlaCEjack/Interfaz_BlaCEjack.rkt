@@ -75,6 +75,7 @@
 listaJugadores
 crupier
 "Se barajan las cartas"
+(setDeck)
 (actualizarMazo (shuffle mazo))
 "Ahora se reparten las primeras dos cartas a los jugadores"
 (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
@@ -103,3 +104,114 @@ crupier
 ;crupier
 ;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))
 ;crupier
+
+;*************************GUI*******************************
+
+; Crea el marco principal
+(define frame (new frame%
+                   [label "BlaCE Jack"]
+                   [width 900]
+                   [height 600]))
+
+
+; Texto que cambia según el evento(Para realizar pruebas)
+(define msg (new message% [parent frame]
+                          [label "No events so far..."]))
+
+;=========================PANELES=====================================
+
+; Crea panel que contiene el sitio de las cartas
+(define panel-crupier (new horizontal-panel% [parent frame]))
+
+(define panel-crupierL (new vertical-panel% [parent panel-crupier]))
+(define panel-crupierM (new vertical-panel% [parent panel-crupier]))
+(define panel-crupierR (new vertical-panel% [parent panel-crupier]))
+
+; Crea panel que contiene el sitio de las cartas
+(define panel-juego-medio (new horizontal-panel% [parent frame]))
+
+(define panel-juego-medioL (new vertical-panel% [parent panel-juego-medio]))
+(define panel-juego-medioM (new vertical-panel% [parent panel-juego-medio]))
+(define panel-juego-medioR (new vertical-panel% [parent panel-juego-medio]))
+
+; Crea panel que contiene el sitio de las cartas
+(define panel-juego-bajo (new horizontal-panel% [parent frame]))
+
+(define panel-juego-bajoL (new vertical-panel% [parent panel-juego-bajo]))
+(define panel-juego-bajoM (new vertical-panel% [parent panel-juego-bajo]))
+(define panel-juego-bajoR (new vertical-panel% [parent panel-juego-bajo]))
+
+; Crea panel que contiene a los botones "Pedir" y "Plantarse"
+(define panel-botones (new horizontal-panel%
+                           [parent frame]
+                           [stretchable-height #f]
+                           [alignment '(center center)]))
+
+;-------------------------------------------------------------------------
+
+;===================BOTONES====================================
+
+; Crea botón "PEDIR"
+(new button% [parent panel-botones]
+             [label "Pedir"]
+             [callback (lambda (button event)
+                         (send msg set-label "PIDIÓ CARTA"))])
+
+; Crea botón "PLANTARSE"
+(new button% [parent panel-botones]
+             [label "Plantarse"]
+             [callback (lambda (button event)
+                         (send msg set-label "SE PLANTÓ"))])
+;-------------------------------------------------------------------
+
+;==========================ESPACIOS DE JUEGO==========================
+; Crea espacio de juego crupier
+(define msgCrupier (new message% [parent panel-crupierM]
+                          [label "Crupier"]))
+
+(new canvas% [parent panel-crupierM]
+             [paint-callback
+              (lambda (canvas dc)
+                (send dc set-scale 3 3)
+                (send dc set-text-foreground "dark green")
+                (send dc draw-text "Crupier" 0 0))])
+
+; Crea espacio de juegador1
+(define msgJugador1 (new message% [parent panel-juego-medioL]
+                          [label "JUgador1"]))
+
+(new canvas% [parent panel-juego-medioL]
+             [paint-callback
+              (lambda (canvas dc)
+                (send dc set-scale 3 3)
+                (send dc set-text-foreground "dark green")
+                (send dc draw-text "Jugador 1" 0 0))])
+
+; Crea espacio de juegador2
+(define msgJugador2 (new message% [parent panel-juego-bajoM]
+                          [label "Jugador2"]))
+
+(new canvas% [parent panel-juego-bajoM]
+             [paint-callback
+              (lambda (canvas dc)
+                (send dc set-scale 3 3)
+                (send dc set-text-foreground "dark green")
+                (send dc draw-text "Jugador 2" 0 0))])
+
+; Crea espacio de juegador3
+(define msgJugador3 (new message% [parent panel-juego-medioR]
+                          [label "Jugador3"]))
+
+(new canvas% [parent panel-juego-medioR]
+             [paint-callback
+              (lambda (canvas dc)
+                (send dc set-scale 3 3)
+                (send dc set-text-foreground "dark green")
+                (send dc draw-text "Jugador 3" 0 0))])
+;----------------------------------------------------------------
+
+ 
+; Método que muestra el marco
+(send frame show #t)
+
+;***********************************************************
