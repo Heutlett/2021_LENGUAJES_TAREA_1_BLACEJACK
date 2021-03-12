@@ -9,7 +9,7 @@
 (provide reparte-cartas)  ;; Parametros: lista de jugadores, mazo
 (provide dar-carta)       ;; Parametros: nombre del jugador, listaDeJugadores, mazo
 (provide crea-crupier)
-(provide nextTurn)        ;;Parametros: lista del jugador
+;(provide )        ;;Parametros: lista del jugador
 
 ;; #################################################################################
 ;; #################################################################################
@@ -279,6 +279,50 @@
 (define (updateScore player)
   (list (getPlayerName player) (getCardsTotalValue (getPlayerDeck player)) (getPlayerDeck player)))
 
+;; updatePlayer
+;; Función que recibe un jugador y retorna la lista de jugadores con el jugador actualizado.
+;; Input: player - jugador a actualizar, playersList - listajugadores a actualizar.
+;; Output: lista de jugadores actualizada.
+(define (updatePlayerInList player playersList)
+  (cond ((null? playersList) #f)
+        (else (updatePlayer_aux player playersList '()))))
+(define (updatePlayer_aux player playersList updated)
+  (cond ((null? playersList) #f)
+        ((equal? (getPlayerName player) (getPlayerName (car playersList))) (append updated (list player)))
+        (else (updatePlayer_aux player (cdr playersList) updated))))
+
+;; visibleDeck
+;; Retorna la puntuación de las visibles del jugador.
+;; Input: player
+;; Output: puntuacion visible del jugador.
+(define (visibleDeck player)
+  (getCardsTotalValue (cdr (getPlayerDeck player))))
+
+;; drawCard
+;; Funcion que agrega una carta al mazo del jugador recibido como parametro.
+;; Input: player - jugador, playersList - lista de jugadores, mazo.
+;; Output: bool, si puede seguir pidiendo, tira verdadero y si no, tira false. Ademas de la lista de jugadores actualizada.
+;(define (drawCard player playersList deck)
+;  ;una vez dada una carta nueva, el jugador se manda a verificar si puede pedir otra vez
+;  (cond ((equal? #t (car (keepDrawing (updateScore (dar-carta player deck))))) )  
+;  
+;  (keepDrawing (updatePlayer (updateScore (dar-carta player deck)) playersList))
+ ; 
+ ; (cond ((not (equal? "No hay jugadores" (updatePlayer (updateScore (dar-carta player deck)) playersList))) (keepDrawing
+
+
+;(define (drawCard_Aux player playersList)
+ ; (updatePlayer (updateScore player))
+;  (cond
+
+;; keepDrawing
+;; Función que verifica si las cartas visibles del jugador suman o se pasan de 21.
+;; Input: player - jugador.
+;; Output: #f si no se pasa, #t si es 21 o se pasa.
+(define (keepDrawing player)
+  (cond [(<= 21 [getCardsTotalValue (cdr (getPlayerDeck player))]) (list #t player)]
+        [else ((list #f player))]))
+
 ;; winners?
 ;; Retorna el ganador o los ganadores de la ronda.
 ;; Input: playersList - lista de jugadores, crupier - casa.
@@ -305,13 +349,7 @@
     [(< (getPlayerScore crupier) (getPlayerScore player)) (list (list (getPlayerName player) (getPlayerScore player)))] ;si tiene mas que el crupier, gana.
     [else '()]))
 
-;; nextTurn
-;; Función que verifica si las cartas visibles del jugador suman o se pasan de 21.
-;; Input: player - jugador.
-;; Output: #f si no se pasa, #t si es 21 o se pasa.
-(define (nextTurn player)
-  (cond [(<= 21 [getCardsTotalValue (cdr (getPlayerDeck player))]) #t]
-        [else #f]))
+
 
 ;-------------------Pruebas-------------------
 
@@ -343,11 +381,21 @@
 ;(turno-crupier '((C 1) (A 9)) (shuffle mazo))
 
 
-(define listPlayers  '(("Player1" 0 ((A 1) (C 12))) ("Player2" 0 ((A 1) (C 5))) ("Player3" 0 ((A 1) (C 8)))))
+(define deck '((T 1) (D 2) (T 3) (C 4) (A 5)))
+(define listPlayers  '(("Player1" 0 ((A 1) (C 12) (D 12)))
+                       ("Player2" 0 ((A 1) (C 5) (D 6)))
+                       ("Player3" 0 ((A 2) (A 1) (C 8)))))
 (define crupier  '("Crupier" "Black-Jack" ((D 11) (C 9))))
+
 ;(victoryCondition (cadr listPlayers) crupier)
 ;(winners? listPlayers crupier)
 
-(updateScore '("Player1" 0 ((A 1) (C 12))))
-(updateScore '("Player2" 0 ((A 2) (C 5))))
-(updateScore '("Player3" 0 ((A 3) (C 12))))
+;(visibleDeck (car listPlayers))
+;(visibleDeck (cadr listPlayers))
+;(visibleDeck (caddr listPlayers))
+
+;(drawCard (car listPlayers) listPlayers deck)
+          
+;(updateScore '("Player1" 0 ((A 1) (C 12))))
+;(updateScore '("Player2" 0 ((A 2) (C 5))))
+;(updateScore '("Player3" 0 ((A 3) (C 12))))
