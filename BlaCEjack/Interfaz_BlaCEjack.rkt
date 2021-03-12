@@ -6,15 +6,6 @@
 
 (require "Logica_BlaCEjack.rkt")
 
-;Condición de que el juego comenzó
-(define gameStart #f)
-
-; Función que dice si el juego comenzó o no
-
-(define (asignar_gameStart bool)
-    (set! gameStart (cons bool gameStart))
-)
-
 ;; ############################################################################
 ;; Variables de la interfaz
 ;; ############################################################################
@@ -28,8 +19,6 @@
 ;; 11 : J
 ;; 12 : Q
 ;; 13 : K
-
-
 
 ;; Variable que guarda el estado del turno actual
 
@@ -73,11 +62,26 @@
 )
 
 
+; #############################################################################################
+; #############################################################################################
+
+; FUNCIONES DE CONTROL DE LA INTERFAZ
+
+; #############################################################################################
+; #############################################################################################
+
+
+; Define el inicio del juego asignando a turno el valor de 1, esto indica que es el turno del
+; jugador1.
+
 (define (iniciarJuego)
   (aumentaTurno))
 
-
-;(actualizarListaJugadores( cdr(drawCard nombreJugador listaJugadores mazo )))
+; Funcion: boton-pedir
+; Esta funcion es la accion del boton pedir en la interfaz, pedirá una carta para el jugador
+; que corresponde segun el turno actual, en caso de que el jugador que pide la carta sume una
+; puntuacion mayor a 21 con sus cartas volteadas se lanzará un aviso de que ha perdido y se
+; aumentará en 1 el valor del turno, haciendo que continue el siguiente jugador.
 
 (define (boton-pedir listaJugadores mazo)
   (cond ((= turno 1)
@@ -98,19 +102,19 @@
           (actualizarListaJugadores(cadr(drawCard jugador listaJugadores mazo ))))
         (else
          (and (actualizarListaJugadores(cadr(drawCard jugador listaJugadores mazo ))) (aumentaTurno)  ))))
-          
 
-;"Pedir cartas jugador 3"
-;'(#t (("Player3" 13 ((A 1) (A 7) (A 5)))))
+; Funcion boton-plantarse
 
+(define (boton-plantarse)
+  (aumentaTurno))
 
-;; Pruebas para manejar las variables
+; #############################################################################################
+; #############################################################################################
 
-;; listaJugadores
+; PRUEBAS
 
-;; (actualizarListaJugadores '( ((A 1) (A 5)) ((A 2) (D 1)) ((A 3) (P 4)) ))
-
-;; listaJugadores
+; #############################################################################################
+; #############################################################################################
 
 
 "Simulacion juego del juego"
@@ -144,6 +148,12 @@ crupier
 (aumentaTurno)
 turno
 
+(boton-pedir listaJugadores mazo)
+listaJugadores
+crupier
+(boton-pedir listaJugadores mazo)
+listaJugadores
+crupier
 (boton-pedir listaJugadores mazo)
 listaJugadores
 crupier
