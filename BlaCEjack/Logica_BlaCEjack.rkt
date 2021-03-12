@@ -300,7 +300,7 @@
 (define (updatePlayerInList_aux player playersList updated)
   (cond ((null? playersList) #f)
         ((equal? (getPlayerName player) (getPlayerName (car playersList))) (append updated (list player)))
-        (else (updatePlayerInList_aux player (cdr playersList) updated))))
+        (else (updatePlayerInList_aux player (cdr playersList) (append updated (list (car playersList)))))))
 
 ;; visibleDeck
 ;; Retorna la puntuación de las visibles del jugador.
@@ -419,7 +419,8 @@ listPlayers
 (displayln "")
 
 "Pedir cartas jugador 3"
-(drawCard (caddr listPlayers) listPlayers (shuffle deck))
+(cadr (drawCard (caddr listPlayers) listPlayers (shuffle deck)))
+
 (displayln "")
 
 "Ganadores:"
