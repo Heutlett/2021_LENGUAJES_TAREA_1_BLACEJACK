@@ -94,7 +94,7 @@
          (pedirCartaCrupier crupier mazo))))
 
 (define (pedirCartaCrupier crupier mazo)
-  (and (actualizarMazo (cdr mazo)) (actualizarCrupier (dar-carta crupier  mazo))))
+  (and (actualizarMazo (cdr mazo)) (actualizarCrupier (turno-crupier crupier  mazo))))
 
 
 (define (pedirCartaJugador jugador listaJugadores mazo)
@@ -177,6 +177,15 @@ crupier
 (boton-pedir listaJugadores mazo)
 listaJugadores
 crupier
+(boton-pedir listaJugadores mazo)
+listaJugadores
+crupier
+(boton-pedir listaJugadores mazo)
+listaJugadores
+crupier
+
+
+
 
 ;crupier
 ;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))

@@ -272,16 +272,18 @@
         [(and (= 1 value) (>= 21 (+ total 11))) 11] ;As - vale 11 (cuando si se suma es igual o menor a 21).
         [else value])) ;(2-3-4-5-6-7-8-9-10) - valen su normal.
 
+; '("crupier" 0 ((P 3) (P 2)))
+
 ;; Turno crupier
 ;; Analiza si la puntuacion del crupier es menor a 16 para solicitar otra carta
 ;; o de lo contrario plantarse
 (define (turno-crupier crupierDeck mazo)
-  (cond ((equal? (getCardsTotalValue crupierDeck) "Black-Jack")
-         (crupierDeck ))
-        ((<= (getCardsTotalValue crupierDeck) 16)
+  (cond ((equal? (getCardsTotalValue (caddr crupierDeck)) "Black-Jack")
+         ((updateScore crupierDeck )))
+        ((<= (getCardsTotalValue (caddr crupierDeck)) 16)
          (dar-carta crupierDeck mazo))
         (else
-         crupierDeck)))
+         (updateScore crupierDeck))))
 
 ;; updateScores
 ;; Actualiza los puntajes de los jugadores y el crupier.
