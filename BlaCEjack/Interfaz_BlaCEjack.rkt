@@ -79,10 +79,6 @@
 
 ;(actualizarListaJugadores( cdr(drawCard nombreJugador listaJugadores mazo )))
 
-
-(define (prueba x)
-  (list x))
-
 (define (pedirCarta jugador listaJugadores mazo)
   (cond ((equal? #t (car(drawCard jugador listaJugadores mazo )))
           (actualizarListaJugadores(cdr(drawCard jugador listaJugadores mazo ))))
