@@ -28,6 +28,18 @@
 ;; 11 : J
 ;; 12 : Q
 ;; 13 : K
+
+
+
+;; Variable que guarda el estado del turno actual
+
+(define turno 0)
+
+;; Aumenta el turno en 1
+(define (aumentaTurno)
+  (set! turno (+ 1 turno)))
+
+   
 (define mazo '())
 
 ;; Funcion que acomoda el maso con todas las cartas.
@@ -59,6 +71,28 @@
 (define (actualizarListaJugadores lista)
     (set! listaJugadores lista)
 )
+
+
+(define (iniciarJuego)
+  (aumentaTurno))
+
+
+;(actualizarListaJugadores( cdr(drawCard nombreJugador listaJugadores mazo )))
+
+
+(define (prueba x)
+  (list x))
+
+(define (pedirCarta jugador listaJugadores mazo)
+  (cond ((equal? #t (car(drawCard jugador listaJugadores mazo )))
+          (actualizarListaJugadores(cdr(drawCard jugador listaJugadores mazo ))))
+        (else
+         (and (actualizarListaJugadores(cdr(drawCard jugador listaJugadores mazo ))) (aumentaTurno)  ))))
+          
+
+;"Pedir cartas jugador 3"
+;'(#t (("Player3" 13 ((A 1) (A 7) (A 5)))))
+
 
 ;; Pruebas para manejar las variables
 
