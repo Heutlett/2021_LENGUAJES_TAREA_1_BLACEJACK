@@ -81,14 +81,19 @@
 
 (define (boton-pedir listaJugadores mazo)
   (cond ((= turno 1)
-         (pedirCarta (car listaJugadores) listaJugadores mazo))
+         (pedirCartaJugador (car listaJugadores) listaJugadores mazo))
         ((and (= turno 2) (>= (length listaJugadores) 2))   
-         (pedirCarta (cadr listaJugadores) listaJugadores mazo))
+         (pedirCartaJugador (cadr listaJugadores) listaJugadores mazo))
         ((and (= turno 3) (>= (length listaJugadores) 3))   
-         (pedirCarta (caddr listaJugadores) listaJugadores mazo))))
-         
+         (pedirCartaJugador (caddr listaJugadores) listaJugadores mazo))
+        ((and (= turno 4) (>= (length listaJugadores) 3))   
+         (pedirCartaCrupier crupier mazo))))
 
-(define (pedirCarta jugador listaJugadores mazo)
+(define (pedirCartaCrupier crupier mazo)
+  (actualizarCrupier (dar-carta crupier  mazo)))
+
+
+(define (pedirCartaJugador jugador listaJugadores mazo)
   (cond ((equal? #t (car(drawCard jugador listaJugadores mazo )))
           (actualizarListaJugadores(cadr(drawCard jugador listaJugadores mazo ))))
         (else
@@ -131,9 +136,23 @@ listaJugadores
 (actualizarMazo (cdr mazo))
 crupier
 
+
+
 "Empieza la partida y los jugadores piden cartas hasta que llega el turno del crupier"
-;(boton-pedir listaJugadores mazo)
-;listaJugadores
+
+(aumentaTurno)
+(aumentaTurno)
+turno
+
+(boton-pedir listaJugadores mazo)
+listaJugadores
+crupier
+(boton-pedir listaJugadores mazo)
+listaJugadores
+crupier
+(boton-pedir listaJugadores mazo)
+listaJugadores
+crupier
 
 
 ;crupier
