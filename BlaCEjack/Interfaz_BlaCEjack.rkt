@@ -90,8 +90,12 @@
          (pedirCartaJugador (cadr listaJugadores) listaJugadores mazo))
         ((and (= turno 3) (>= (length listaJugadores) 3))   
          (pedirCartaJugador (caddr listaJugadores) listaJugadores mazo))
-        ((and (= turno 4) (>= (length listaJugadores) 3))   
-         (pedirCartaCrupier crupier mazo))))
+        ((and (= turno 4) (>= (length listaJugadores) 3) (not (equal? (cadr crupier) "Black-Jack")) (<= (cadr crupier) 16) )   
+         (pedirCartaCrupier crupier mazo))
+        ((and (= turno 4) (>= (length listaJugadores) 3) (equal? (cadr crupier) "Black-Jack"))   
+         (winners? listaJugadores crupier))
+        ((and (= turno 4) (>= (length listaJugadores) 3) (>= (cadr crupier) 16))   
+         (winners? listaJugadores crupier))))
 
 (define (pedirCartaCrupier crupier mazo)
   (and (actualizarMazo (cdr mazo)) (actualizarCrupier (turno-crupier crupier  mazo))))
@@ -184,7 +188,7 @@ crupier
 listaJugadores
 crupier
 
-
+;(winners? listaJugadores crupier)
 
 
 ;crupier

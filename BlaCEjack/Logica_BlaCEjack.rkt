@@ -10,6 +10,7 @@
 (provide dar-carta)       ;; Parametros: nombre del jugador, listaDeJugadores, mazo
 (provide crea-crupier)
 (provide drawCard)        ;;Parametros: jugador, lista del jugador, mazo.
+(provide winners?)
 
 ;; #################################################################################
 ;; #################################################################################
@@ -279,7 +280,9 @@
 ;; o de lo contrario plantarse
 (define (turno-crupier crupierDeck mazo)
   (cond ((equal? (getCardsTotalValue (caddr crupierDeck)) "Black-Jack")
-         ((updateScore crupierDeck )))
+         (updateScore crupierDeck ))
+        ((equal? (cadr crupierDeck) "Black-Jack")
+         (updateScore crupierDeck ))
         ((<= (getCardsTotalValue (caddr crupierDeck)) 16)
          (dar-carta crupierDeck mazo))
         (else
@@ -429,3 +432,9 @@ listPlayers
 
 ;"Ganadores:"
 ;(winners? listPlayers crupier)
+
+
+
+
+
+
