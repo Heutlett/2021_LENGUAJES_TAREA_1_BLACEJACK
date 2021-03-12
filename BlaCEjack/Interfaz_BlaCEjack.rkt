@@ -3,6 +3,7 @@
 
 (require racket/gui)
 (require racket/include)
+(require (prefix-in htdp: 2htdp/image))
 
 (require "Logica_BlaCEjack.rkt")
 
@@ -107,55 +108,104 @@ crupier
 
 ;*************************GUI*******************************
 
-; Crea el marco principal
+(define espacios-fila 5)
+
+; Crea el marco de juego
 (define frame (new frame%
                    [label "BlaCE Jack"]
                    [width 900]
-                   [height 600]))
+                   [height 800]))
 
+; Crea el marco principal
+(define Firstframe (new frame%
+                   [label "BlaCE Jack"]
+                   [width 400]
+                   [height 200]
+                   ))
 
 ; Texto que cambia según el evento(Para realizar pruebas)
 (define msg (new message% [parent frame]
                           [label "No events so far..."]))
 
+
 ;=========================PANELES=====================================
 
-; Crea panel que contiene el sitio de las cartas
-(define panel-crupier (new horizontal-panel% [parent frame]))
+; Crea panel que contiene el seleccionador de jugadores
+(define panel-label-cantidad (new horizontal-panel%
+                                  [parent Firstframe]
+                                  [alignment '(center center)]))
+(define panel-botones-cantidad (new horizontal-panel%
+                                    [parent Firstframe]
+                                    [alignment '(center center)]))
 
-(define panel-crupierL (new vertical-panel% [parent panel-crupier]))
-(define panel-crupierM (new vertical-panel% [parent panel-crupier]))
-(define panel-crupierR (new vertical-panel% [parent panel-crupier]))
+(define cantidad (new message% [parent panel-label-cantidad]
+                          [label "Seleccione la cantidad de Jugadores"]))
 
 ; Crea panel que contiene el sitio de las cartas
-(define panel-juego-medio (new horizontal-panel% [parent frame]))
+(define panel-juego-alto (new horizontal-panel% [parent frame] [min-height 200]))
+
+(define panel-crupierL (new vertical-panel% [parent panel-juego-alto] [min-width 200]))
+(define panel-crupierM (new vertical-panel% [parent panel-juego-alto]))
+(define panel-crupierR (new vertical-panel% [parent panel-juego-alto] [min-width 200]))
+
+; Crea panel que contiene el sitio de las cartas
+(define panel-juego-medio (new horizontal-panel% [parent frame] [min-height 200]))
 
 (define panel-juego-medioL (new vertical-panel% [parent panel-juego-medio]))
 (define panel-juego-medioM (new vertical-panel% [parent panel-juego-medio]))
 (define panel-juego-medioR (new vertical-panel% [parent panel-juego-medio]))
 
 ; Crea panel que contiene el sitio de las cartas
-(define panel-juego-bajo (new horizontal-panel% [parent frame]))
+(define panel-juego-bajo (new horizontal-panel% [parent frame] [min-height 200]))
 
 (define panel-juego-bajoL (new vertical-panel% [parent panel-juego-bajo]))
 (define panel-juego-bajoM (new vertical-panel% [parent panel-juego-bajo]))
 (define panel-juego-bajoR (new vertical-panel% [parent panel-juego-bajo]))
 
 ; Crea panel que contiene a los botones "Pedir" y "Plantarse"
-(define panel-botones (new horizontal-panel%
+(define panel-display (new horizontal-panel%
                            [parent frame]
-                           [stretchable-height #f]
+                           [stretchable-height #f]))
+
+(define panel-info (new vertical-panel%
+                           [parent panel-display]
                            [alignment '(center center)]))
+
+(define panel-botones (new vertical-panel%
+                           [parent panel-display]
+                           [alignment '(center center)]))
+
 
 ;-------------------------------------------------------------------------
 
 ;===================BOTONES====================================
 
+; Crea botón "1"
+(new button% [parent panel-botones-cantidad]
+             [label "1"]
+             [callback (lambda (button event)
+                         (send Firstframe show #f)
+                         (send frame show #t))])
+; Crea botón "2"
+(new button% [parent panel-botones-cantidad]
+             [label "2"]
+             [callback (lambda (button event)
+                         (send Firstframe show #f)
+                         (send frame show #t))])
+; Crea botón "3"
+(new button% [parent panel-botones-cantidad]
+             [label "3"]
+             [callback (lambda (button event)
+                         (send Firstframe show #f)
+                         (send frame show #t))])
+
+
 ; Crea botón "PEDIR"
 (new button% [parent panel-botones]
              [label "Pedir"]
              [callback (lambda (button event)
-                         (send msg set-label "PIDIÓ CARTA"))])
+                         (send msg set-label "PIDIÓ CARTA")
+                         (dibujarCartas))])
 
 ; Crea botón "PLANTARSE"
 (new button% [parent panel-botones]
@@ -166,52 +216,89 @@ crupier
 
 ;==========================ESPACIOS DE JUEGO==========================
 ; Crea espacio de juego crupier
-(define msgCrupier (new message% [parent panel-crupierM]
+(define panel-crupier (new horizontal-panel%
+                           [parent panel-crupierM]
+                           [stretchable-height #f]
+                           [alignment '(center center)]
+                           ))
+
+(define panel-crupier-juego1 (new horizontal-panel% [parent panel-crupierM] [style '(border)]))
+(define panel-crupier-juego2 (new horizontal-panel% [parent panel-crupierM] [style '(border)]))
+
+(define msgCrupier (new message% [parent panel-crupier]
                           [label "Crupier"]))
 
-(new canvas% [parent panel-crupierM]
-             [paint-callback
-              (lambda (canvas dc)
-                (send dc set-scale 3 3)
-                (send dc set-text-foreground "dark green")
-                (send dc draw-text "Crupier" 0 0))])
 
-; Crea espacio de juegador1
+; Crea espacio de jugador1
+(define panel-jugador1 (new horizontal-panel%
+                           [parent panel-juego-medioL]
+                           [stretchable-height #f]
+                           [alignment '(center center)]
+                           ))
+
+(define panel-jugador1-juego1 (new horizontal-panel% [parent panel-juego-medioL] [style '(border)]))
+(define panel-jugador1-juego2 (new horizontal-panel% [parent panel-juego-medioL] [style '(border)]))
+
 (define msgJugador1 (new message% [parent panel-juego-medioL]
-                          [label "JUgador1"]))
+                          [label "Jugador1"]))
 
-(new canvas% [parent panel-juego-medioL]
-             [paint-callback
-              (lambda (canvas dc)
-                (send dc set-scale 3 3)
-                (send dc set-text-foreground "dark green")
-                (send dc draw-text "Jugador 1" 0 0))])
 
-; Crea espacio de juegador2
+; Crea espacio de jugador2
+(define panel-jugador2 (new horizontal-panel%
+                           [parent panel-juego-bajoM]
+                           [stretchable-height #f]
+                           [alignment '(center center)]
+                           ))
+
+(define panel-jugador2-juego1 (new horizontal-panel% [parent panel-juego-bajoM] [style '(border)]))
+(define panel-jugador2-juego2 (new horizontal-panel% [parent panel-juego-bajoM] [style '(border)]))
+
 (define msgJugador2 (new message% [parent panel-juego-bajoM]
                           [label "Jugador2"]))
 
-(new canvas% [parent panel-juego-bajoM]
-             [paint-callback
-              (lambda (canvas dc)
-                (send dc set-scale 3 3)
-                (send dc set-text-foreground "dark green")
-                (send dc draw-text "Jugador 2" 0 0))])
 
-; Crea espacio de juegador3
+; Crea espacio de jugador3
+(define panel-jugador3 (new horizontal-panel%
+                           [parent panel-juego-medioR]
+                           [stretchable-height #f]
+                           [alignment '(center center)]
+                           ))
+
+(define panel-jugador3-juego1 (new horizontal-panel% [parent panel-juego-medioR] [style '(border)]))
+(define panel-jugador3-juego2 (new horizontal-panel% [parent panel-juego-medioR] [style '(border)]))
+
 (define msgJugador3 (new message% [parent panel-juego-medioR]
                           [label "Jugador3"]))
 
-(new canvas% [parent panel-juego-medioR]
-             [paint-callback
-              (lambda (canvas dc)
-                (send dc set-scale 3 3)
-                (send dc set-text-foreground "dark green")
-                (send dc draw-text "Jugador 3" 0 0))])
 ;----------------------------------------------------------------
+
+;========================Espacio para las cartas==================
+
+;Dibuja las cartas en el espacio del jugador o crupier asignado
+(define (dibujarCartas)
+  (cond ( (<= espacios-fila 0)
+          (new message% [parent panel-crupier-juego2]
+                          [label (read-bitmap "cards/QH.png")]))
+        ( else
+          (new message% [parent panel-crupier-juego1]
+                          [label (read-bitmap "cards/QH.png")])
+          (set! espacios-fila (sub1 espacios-fila)))))
+
+
+;-----------------------------------------------------------------
+
+;======================INFORMACION================================
+
+(new message% [parent panel-info]
+                          [label "Turno de :Jugador 1"])
+
+(new message% [parent panel-info]
+                          [label "Puntaje actual: 10"])
+
+;-----------------------------------------------------------------
 
  
 ; Método que muestra el marco
-(send frame show #t)
+(send Firstframe show #t)
 
 ;***********************************************************
