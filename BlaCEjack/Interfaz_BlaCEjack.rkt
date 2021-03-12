@@ -278,10 +278,10 @@ crupier
 (define (dibujarCartas)
   (cond ( (<= espacios-fila 0)
           (new message% [parent panel-crupier-juego2]
-                          [label (read-bitmap "cards/QH.png")]))
+                          [label (read-bitmap "cards/T3.png")]))
         ( else
           (new message% [parent panel-crupier-juego1]
-                          [label (read-bitmap "cards/QH.png")])
+                          [label (read-bitmap "cards/BG.png")])
           (set! espacios-fila (sub1 espacios-fila)))))
 
 
