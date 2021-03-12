@@ -1,0 +1,21 @@
+Pedir-Carta(nombreJugador, listaJugadores)    -----> Button pedir
+
+1. Condicion:   Si mi puntuacion de cartas volteadas es <= 21 me da una carta nueva
+       
+	-Se cumple:   Llama a funcion "dar-carta-jugador"
+		Devuelve: ( 1 listaJugadores)
+			Donde 1 = Le indica a la interfaz que el jugador 
+				puede pedir otra carta si lo desea o plantarse.
+	-No se cumple: 
+		Devuelve:
+			  ( 0 listaJugadores)
+			Donde 0 = Le indica a la interfaz que el jugador
+			ha perdido y no puede pedir más, pasa el turno al jugador 
+			que sigue.
+		
+
+
+
+
+ARREGLAR QUE SE DISMINUYA UNA CARTA CADA VEZ QUE SE REPARTE DESDE LA LOGICA.
+TAMBIEN HACER FUNCION QUE BAREJE DESDE LA LOGICA.
