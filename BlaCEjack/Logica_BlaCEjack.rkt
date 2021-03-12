@@ -295,12 +295,11 @@
 ;; Input: player - jugador a actualizar, playersList - listajugadores a actualizar.
 ;; Output: lista de jugadores actualizada.
 (define (updatePlayerInList player playersList)
-  (cond ((null? playersList) #f)
-        (else (updatePlayerInList_aux player playersList '()))))
-(define (updatePlayerInList_aux player playersList updated)
-  (cond ((null? playersList) #f)
-        ((equal? (getPlayerName player) (getPlayerName (car playersList))) (append updated (list player)))
-        (else (updatePlayerInList_aux player (cdr playersList) (append updated (list (car playersList)))))))
+  (cond ((null? playersList) '())
+        [(equal? (getPlayerName player) (getPlayerName (car playersList)))
+            (append (list player) (updatePlayerInList player (cdr playersList)))]
+        [else
+            (append (list (car playersList)) (updatePlayerInList player (cdr playersList)))]))
 
 ;; visibleDeck
 ;; Retorna la puntuación de las visibles del jugador.
@@ -317,8 +316,9 @@
   (drawCard_aux (updateScore (dar-carta player deck)) playersList)) ;agregamos una carta al jugador y se pasa a la funcion auxiliar.
 
 (define (drawCard_aux player playersList)
+   (displayln player)
   ;una vez dada la carta el jugador se manda a verificar si puede pedir otra vez, #t si, #f no.
-  (list (keepDrawing player) (updatePlayerInList player playersList)))
+   (list (keepDrawing player) (updatePlayerInList player playersList)))
 
 ;; keepDrawing
 ;; Función que verifica si las cartas visibles del jugador suman o se pasan de 21.
@@ -398,31 +398,33 @@
 ;(visibleDeck (caddr listPlayers))
 
 (define deck '((T 1) (D 2) (T 3) (C 4) (A 5)))
-(define listPlayers  '(("Player1" 21 ((A 1) (A 2) (A 7)))
-                       ("Player2" 4 ((A 6) (A 5) (T 1)))
-                       ("Player3" 13 ((A 1) (A 7)))))
-
+(define listPlayers  '(("Player1" 0 ((A 1) (A 2) (A 7)))
+                       ("Player2" 0 ((A 6) (A 5) (T 1)))
+                       ("Player3" 0 ((A 1) (A 7)))
+                      ))
+(define player '("Player3" "Nico-Nico-Ni" ((* *) (* *) (* *))))
 (define crupier  '("Crupier" 5 ((D 11) (C 9))))
 
 "Jugadores:"
 listPlayers
 
-(displayln "")
+"Acciones:"
+
+
 ;(getCardsTotalValue (getPlayerDeck (cadr listPlayers)))
+;(displayln "")
+;(displayln "")
+;"Pedir cartas jugador 1"
+;(drawCard (car listPlayers) listPlayers (shuffle deck))
+;(displayln "")
 
-"Pedir cartas jugador 1"
-(drawCard (car listPlayers) listPlayers (shuffle deck))
-(displayln "")
+;"Pedir cartas jugador 2"
+;(drawCard (cadr listPlayers) listPlayers (shuffle deck))
+;(displayln "")
 
-"Pedir cartas jugador 2"
-(drawCard (cadr listPlayers) listPlayers (shuffle deck))
-(displayln "")
+;"Pedir cartas jugador 3"
+;(drawCard (caddr listPlayers) listPlayers (shuffle deck))
+;(displayln "")
 
-"Pedir cartas jugador 3"
-(cadr (drawCard (caddr listPlayers) listPlayers (shuffle deck)))
-
-(displayln "")
-
-"Ganadores:"
-(winners? listPlayers crupier)
-
+;"Ganadores:"
+;(winners? listPlayers crupier)
