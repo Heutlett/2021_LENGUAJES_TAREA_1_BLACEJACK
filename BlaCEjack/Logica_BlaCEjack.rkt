@@ -316,7 +316,6 @@
   (drawCard_aux (updateScore (dar-carta player deck)) playersList)) ;agregamos una carta al jugador y se pasa a la funcion auxiliar.
 
 (define (drawCard_aux player playersList)
-   (displayln player)
   ;una vez dada la carta el jugador se manda a verificar si puede pedir otra vez, #t si, #f no.
    (list (keepDrawing player) (updatePlayerInList player playersList)))
 
