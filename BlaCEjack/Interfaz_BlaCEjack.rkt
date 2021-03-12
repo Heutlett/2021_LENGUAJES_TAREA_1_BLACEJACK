@@ -79,6 +79,15 @@
 
 ;(actualizarListaJugadores( cdr(drawCard nombreJugador listaJugadores mazo )))
 
+(define (boton-pedir listaJugadores mazo)
+  (cond ((= turno 1)
+         (pedirCarta (car listaJugadores) listaJugadores mazo))
+        ((and ((= turno 2)) (>= (length listaJugadores) 2))   
+         (pedirCarta (cadr listaJugadores) listaJugadores mazo))
+        ((and ((= turno 3)) (>= (length listaJugadores) 3))   
+         (pedirCarta (caddr listaJugadores) listaJugadores mazo))))
+         
+
 (define (pedirCarta jugador listaJugadores mazo)
   (cond ((equal? #t (car(drawCard jugador listaJugadores mazo )))
           (actualizarListaJugadores(cdr(drawCard jugador listaJugadores mazo ))))
@@ -100,6 +109,7 @@
 
 
 "Simulacion juego del juego"
+(iniciarJuego)
 "Se inicia con tres jugadores sin cartas y el crupier"
 (actualizarListaJugadores (bCEj 3))
 listaJugadores
@@ -121,6 +131,9 @@ listaJugadores
 (actualizarMazo (cdr mazo))
 crupier
 
+"Empieza la partida y los jugadores piden cartas hasta que llega el turno del crupier"
+(boton-pedir listaJugadores mazo)
+listaJugadores
 
 
 ;crupier
