@@ -141,26 +141,26 @@ crupier
 (define cantidad (new message% [parent panel-label-cantidad]
                           [label "Seleccione la cantidad de Jugadores"]))
 
-; Crea panel que contiene el sitio de las cartas
+; Crea panel que contiene el sitio de las cartas del crupier
 (define panel-juego-alto (new horizontal-panel% [parent frame] [min-height 200]))
 
 (define panel-crupierL (new vertical-panel% [parent panel-juego-alto] [min-width 200]))
 (define panel-crupierM (new vertical-panel% [parent panel-juego-alto]))
 (define panel-crupierR (new vertical-panel% [parent panel-juego-alto] [min-width 200]))
 
-; Crea panel que contiene el sitio de las cartas
+; Crea panel que contiene el sitio de las cartas del jugador 1 y 3
 (define panel-juego-medio (new horizontal-panel% [parent frame] [min-height 200]))
 
 (define panel-juego-medioL (new vertical-panel% [parent panel-juego-medio]))
-(define panel-juego-medioM (new vertical-panel% [parent panel-juego-medio]))
+(define panel-juego-medioM (new vertical-panel% [parent panel-juego-medio] [min-width 200]))
 (define panel-juego-medioR (new vertical-panel% [parent panel-juego-medio]))
 
-; Crea panel que contiene el sitio de las cartas
+; Crea panel que contiene el sitio de las cartas del jugador 2
 (define panel-juego-bajo (new horizontal-panel% [parent frame] [min-height 200]))
 
-(define panel-juego-bajoL (new vertical-panel% [parent panel-juego-bajo]))
+(define panel-juego-bajoL (new vertical-panel% [parent panel-juego-bajo] [min-width 200]))
 (define panel-juego-bajoM (new vertical-panel% [parent panel-juego-bajo]))
-(define panel-juego-bajoR (new vertical-panel% [parent panel-juego-bajo]))
+(define panel-juego-bajoR (new vertical-panel% [parent panel-juego-bajo] [min-width 200]))
 
 ; Crea panel que contiene a los botones "Pedir" y "Plantarse"
 (define panel-display (new horizontal-panel%
@@ -205,13 +205,14 @@ crupier
              [label "Pedir"]
              [callback (lambda (button event)
                          (send msg set-label "PIDIÓ CARTA")
-                         (dibujarCartas))])
+                         (dibujarCartas t c))])
 
 ; Crea botón "PLANTARSE"
 (new button% [parent panel-botones]
              [label "Plantarse"]
              [callback (lambda (button event)
-                         (send msg set-label "SE PLANTÓ"))])
+                         (send msg set-label "SE PLANTÓ")
+                         (pasar))])
 ;-------------------------------------------------------------------
 
 ;==========================ESPACIOS DE JUEGO==========================
@@ -275,16 +276,51 @@ crupier
 ;========================Espacio para las cartas==================
 
 ;Dibuja las cartas en el espacio del jugador o crupier asignado
-(define (dibujarCartas)
+;con la variable espacios-fila solo permite posicionar 5 cartas en fila
+(define (dibujarCartas turno carta)
   (cond ( (<= espacios-fila 0)
-          (new message% [parent panel-crupier-juego2]
-                          [label (read-bitmap "cards/T3.png")]))
+          (dibujarCartas-aux turno (string-append "cards/" carta ".png") 2)
+          )
         ( else
-          (new message% [parent panel-crupier-juego1]
-                          [label (read-bitmap "cards/BG.png")])
+          (dibujarCartas-aux turno (string-append "cards/" carta ".png") 1)
           (set! espacios-fila (sub1 espacios-fila)))))
 
+;Función auxiliar, comprueba el jugador y la zona en donde debe graficar
+(define (dibujarCartas-aux turno carta zona)
+  (cond ( (and (equal? turno 0) (equal? zona 1))
+          (new message% [parent panel-crupier-juego1]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 0) (equal? zona 2))
+          (new message% [parent panel-crupier-juego2]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 1) (equal? zona 1))
+          (new message% [parent panel-jugador1-juego1]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 1) (equal? zona 2))
+          (new message% [parent panel-jugador1-juego2]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 2) (equal? zona 1))
+          (new message% [parent panel-jugador2-juego1]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 2) (equal? zona 2))
+          (new message% [parent panel-jugador2-juego2]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 3) (equal? zona 1))
+          (new message% [parent panel-jugador3-juego1]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 3) (equal? zona 2))
+          (new message% [parent panel-jugador3-juego2]
+                        [label (read-bitmap carta)]))
+        ))
 
+;Definiciones temporales para realizar pruebas
+(define t 0)
+(define c "T12")
+
+;Metodo llamado por plantarse para realziar pruebas
+(define (pasar)
+  (set! t (add1 t))
+  (set! espacios-fila 5))
 ;-----------------------------------------------------------------
 
 ;======================INFORMACION================================
