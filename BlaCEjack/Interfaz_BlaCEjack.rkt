@@ -25,9 +25,12 @@
 
 (define turno 0)
 
+(define espacios-fila 5)
+
 ;; Aumenta el turno en 1
 (define (aumentaTurno)
-  (set! turno (+ 1 turno)))
+  (set! turno (+ 1 turno))
+  (set! espacios-fila 5))
 
    
 (define mazo '())
@@ -62,6 +65,9 @@
     (set! listaJugadores lista)
 )
 
+;; Establecer turno crupier
+(define (establecerTurnoCrupier)
+  (set! turno 4))
 
 ; #############################################################################################
 ; #############################################################################################
@@ -85,18 +91,21 @@
 ; aumentará en 1 el valor del turno, haciendo que continue el siguiente jugador.
 
 (define (boton-pedir listaJugadores mazo)
-  (cond ((= turno 1)
+  (cond ((or (and (= turno 2) (= (length listaJugadores) 1)) (and (= turno 3) (= (length listaJugadores) 2)) )
+         (and (establecerTurnoCrupier) (boton-pedir listaJugadores mazo) ))
+        ((= turno 1)
          (pedirCartaJugador (car listaJugadores) listaJugadores mazo))
         ((and (= turno 2) (>= (length listaJugadores) 2))   
          (pedirCartaJugador (cadr listaJugadores) listaJugadores mazo))
         ((and (= turno 3) (>= (length listaJugadores) 3))   
          (pedirCartaJugador (caddr listaJugadores) listaJugadores mazo))
-        ((and (= turno 4) (>= (length listaJugadores) 3) (not (equal? (cadr crupier) "Black-Jack")) (<= (cadr crupier) 16) )   
-         (pedirCartaCrupier crupier mazo))
-        ((and (= turno 4) (>= (length listaJugadores) 3) (equal? (cadr crupier) "Black-Jack"))   
-         (winners? listaJugadores crupier))
-        ((and (= turno 4) (>= (length listaJugadores) 3) (>= (cadr crupier) 16))   
-         (winners? listaJugadores crupier))))
+        ((= turno 4)
+         (cond ((and (not (equal? (cadr crupier) "Black-Jack")) (<= (cadr crupier) 16) )   
+            (and (pedirCartaCrupier crupier mazo) (boton-pedir listaJugadores mazo)))
+           ((equal? (cadr crupier) "Black-Jack")   
+            (winners? listaJugadores crupier))
+           ((and (>= (cadr crupier) 16))   
+            (winners? listaJugadores crupier))))))
 
 (define (pedirCartaCrupier crupier mazo)
   (and (actualizarMazo (cdr mazo)) (actualizarCrupier (turno-crupier crupier  mazo))))
@@ -107,7 +116,6 @@
           (and (actualizarMazo (cdr mazo)) (actualizarListaJugadores(cadr(drawCard jugador listaJugadores mazo )))))
         (else
          (and (actualizarMazo (cdr mazo)) (actualizarListaJugadores(cadr(drawCard jugador listaJugadores mazo ))) (aumentaTurno)  ))))
-
 ; Funcion boton-plantarse
 
 (define (boton-plantarse)
@@ -117,9 +125,22 @@
 ; #############################################################################################
 
 
+
+;Pruebas
+
+(iniciarJuego)
+
+
+"Empieza la partida y los jugadores piden cartas hasta que llega el turno del crupier"
+
+
+
+
+
+
 ;*************************GUI*******************************
 
-(define espacios-fila 5)
+
 
 ; Crea el marco de juego
 (define frame (new frame%
@@ -195,18 +216,72 @@
 (new button% [parent panel-botones-cantidad]
              [label "1"]
              [callback (lambda (button event)
+                         
+                         (actualizarListaJugadores (bCEj 1))
+                         (setDeck)
+                         (actualizarMazo (shuffle mazo))
+
+                         (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+                         (actualizarMazo (cdddr mazo))
+                         (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+                         (actualizarMazo (cdddr mazo))
+
+                         (actualizarCrupier (dar-carta crupier  mazo))
+                         (actualizarMazo (cdr mazo))
+                         (actualizarCrupier (dar-carta crupier  mazo))
+                         (actualizarMazo (cdr mazo))
+
+                         listaJugadores
+                         crupier
+                         
                          (send Firstframe show #f)
                          (send frame show #t))])
 ; Crea botón "2"
 (new button% [parent panel-botones-cantidad]
              [label "2"]
              [callback (lambda (button event)
+                         
+                         (actualizarListaJugadores (bCEj 2))
+                         (setDeck)
+                         (actualizarMazo (shuffle mazo))
+
+                         (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+                         (actualizarMazo (cdddr mazo))
+                         (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+                         (actualizarMazo (cdddr mazo))
+
+                         (actualizarCrupier (dar-carta crupier  mazo))
+                         (actualizarMazo (cdr mazo))
+                         (actualizarCrupier (dar-carta crupier  mazo))
+                         (actualizarMazo (cdr mazo))
+
+                         listaJugadores
+                         crupier
+                         
                          (send Firstframe show #f)
                          (send frame show #t))])
 ; Crea botón "3"
 (new button% [parent panel-botones-cantidad]
              [label "3"]
              [callback (lambda (button event)
+                         
+                         (actualizarListaJugadores (bCEj 3))
+                         (setDeck)
+                         (actualizarMazo (shuffle mazo))
+
+                         (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+                         (actualizarMazo (cdddr mazo))
+                         (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+                         (actualizarMazo (cdddr mazo))
+
+                         (actualizarCrupier (dar-carta crupier  mazo))
+                         (actualizarMazo (cdr mazo))
+                         (actualizarCrupier (dar-carta crupier  mazo))
+                         (actualizarMazo (cdr mazo))
+
+                         listaJugadores
+                         crupier
+                         
                          (send Firstframe show #f)
                          (send frame show #t))])
 
@@ -216,7 +291,8 @@
              [label "Pedir"]
              [callback (lambda (button event)
                          (send msg set-label "PIDIÓ CARTA")
-                         (dibujarCartas t c))])
+                         (boton-pedir listaJugadores mazo)
+                         (dibujarCartas turno c))])
 
 ; Crea botón "PLANTARSE"
 (new button% [parent panel-botones]
@@ -298,10 +374,10 @@
 
 ;Función auxiliar, comprueba el jugador y la zona en donde debe graficar
 (define (dibujarCartas-aux turno carta zona)
-  (cond ( (and (equal? turno 0) (equal? zona 1))
+  (cond ( (and (equal? turno 4) (equal? zona 1))
           (new message% [parent panel-crupier-juego1]
                         [label (read-bitmap carta)]))
-        ( (and (equal? turno 0) (equal? zona 2))
+        ( (and (equal? turno 4) (equal? zona 2))
           (new message% [parent panel-crupier-juego2]
                         [label (read-bitmap carta)]))
         ( (and (equal? turno 1) (equal? zona 1))
