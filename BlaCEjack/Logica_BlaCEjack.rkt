@@ -73,6 +73,7 @@
 ;; Funcion dar-carta-jugador
 ;; Da una carta a un jugador y devuelve la lista con todos los jugadores y el jugador con la carta nueva actualizado
 ;; Entradas: jugador = nombre del jugador "jugador", listaJugadores, mazo
+;; Salida: lista con todos los jugadores y el jugador con la carta nueva actualizado
 (define (dar-carta-jugador jugador listaJugadores mazo)
   (dar-carta-jugador-aux jugador listaJugadores mazo '()))
 
