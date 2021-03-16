@@ -28,6 +28,10 @@
 (define (aumentaTurno)
   (set! turno (+ 1 turno)))
 
+
+;; Establecer turno crupier
+(define (establerTurnoCrupier)
+  (set! turno 4))
    
 (define mazo '())
 
@@ -90,12 +94,18 @@
          (pedirCartaJugador (cadr listaJugadores) listaJugadores mazo))
         ((and (= turno 3) (>= (length listaJugadores) 3))   
          (pedirCartaJugador (caddr listaJugadores) listaJugadores mazo))
-        ((and (= turno 4) (>= (length listaJugadores) 3) (not (equal? (cadr crupier) "Black-Jack")) (<= (cadr crupier) 16) )   
-         (pedirCartaCrupier crupier mazo))
-        ((and (= turno 4) (>= (length listaJugadores) 3) (equal? (cadr crupier) "Black-Jack"))   
-         (winners? listaJugadores crupier))
-        ((and (= turno 4) (>= (length listaJugadores) 3) (>= (cadr crupier) 16))   
-         (winners? listaJugadores crupier))))
+        ((= turno 4)
+         (cond ((and (not (equal? (cadr crupier) "Black-Jack")) (<= (cadr crupier) 16) )   
+            (and (pedirCartaCrupier crupier mazo) (boton-pedir listaJugadores mazo)))
+           ((equal? (cadr crupier) "Black-Jack")   
+            (winners? listaJugadores crupier))
+           ((and (>= (cadr crupier) 16))   
+            (winners? listaJugadores crupier))))))
+
+ (define (verifica-turno)
+    (cond ((or (and (= turno 2) (= (length listaJugadores) 1)) (and (= turno 3) (= (length listaJugadores) 2)) )
+         (and (establerTurnoCrupier) (boton-pedir listaJugadores mazo) ))))
+
 
 (define (pedirCartaCrupier crupier mazo)
   (and (actualizarMazo (cdr mazo)) (actualizarCrupier (turno-crupier crupier  mazo))))
@@ -105,12 +115,19 @@
   (cond ((equal? #t (car(drawCard jugador listaJugadores mazo )))
           (and (actualizarMazo (cdr mazo)) (actualizarListaJugadores(cadr(drawCard jugador listaJugadores mazo )))))
         (else
-         (and (actualizarMazo (cdr mazo)) (actualizarListaJugadores(cadr(drawCard jugador listaJugadores mazo ))) (aumentaTurno)  ))))
+         (and (actualizarMazo (cdr mazo)) (actualizarListaJugadores(cadr(drawCard jugador listaJugadores mazo ))) (and (aumentaTurno) )  (verifica-turno)))))
 
 ; Funcion boton-plantarse
 
 (define (boton-plantarse)
-  (aumentaTurno))
+  (cond ((and (= turno 1) (= (length listaJugadores) 1)
+   (establerTurnoCrupier)))
+  ((and (= turno 2) (= (length listaJugadores) 2))   
+   (establerTurnoCrupier))
+  ((and (= turno 3) (= (length listaJugadores) 3))   
+   (establerTurnoCrupier))
+  (else
+  (aumentaTurno))))
 
 ; #############################################################################################
 ; #############################################################################################
@@ -120,16 +137,13 @@
 ; #############################################################################################
 ; #############################################################################################
 
-
-"Simulacion juego del juego"
-(iniciarJuego)
-"Se inicia con tres jugadores sin cartas y el crupier"
-(actualizarListaJugadores (bCEj 3))
+(actualizarListaJugadores (bCEj 2))
 listaJugadores
 crupier
 "Se barajan las cartas"
 (setDeck)
 (actualizarMazo (shuffle mazo))
+turno
 "Ahora se reparten las primeras dos cartas a los jugadores"
 (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
 (actualizarMazo (cdddr mazo))
@@ -144,61 +158,14 @@ listaJugadores
 (actualizarMazo (cdr mazo))
 crupier
 
-
+(iniciarJuego)
 
 "Empieza la partida y los jugadores piden cartas hasta que llega el turno del crupier"
 
 (boton-pedir listaJugadores mazo)
 listaJugadores
 crupier
-(boton-pedir listaJugadores mazo)
-listaJugadores
-crupier
-(boton-pedir listaJugadores mazo)
-listaJugadores
-crupier
-(boton-pedir listaJugadores mazo)
-listaJugadores
-crupier
-(boton-pedir listaJugadores mazo)
-listaJugadores
-crupier
-(boton-pedir listaJugadores mazo)
-listaJugadores
-crupier
-(boton-pedir listaJugadores mazo)
-listaJugadores
-crupier
-(boton-pedir listaJugadores mazo)
-listaJugadores
-crupier
-(boton-pedir listaJugadores mazo)
-listaJugadores
-crupier
-(boton-pedir listaJugadores mazo)
-listaJugadores
-crupier
-(boton-pedir listaJugadores mazo)
-listaJugadores
-crupier
-(boton-pedir listaJugadores mazo)
-listaJugadores
-crupier
-(boton-pedir listaJugadores mazo)
-listaJugadores
-crupier
-
-;(winners? listaJugadores crupier)
+turno
 
 
-;crupier
-;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))
-;crupier
-;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))
-;crupier
-;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))
-;crupier
-;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))
-;crupier
-;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))
-;crupier
+
