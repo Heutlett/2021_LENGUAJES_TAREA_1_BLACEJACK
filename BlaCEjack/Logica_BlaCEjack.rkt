@@ -9,95 +9,11 @@
 (provide reparte-cartas)  ;; Parametros: lista de jugadores, mazo
 (provide dar-carta)       ;; Parametros: nombre del jugador, listaDeJugadores, mazo
 (provide crea-crupier)
-(provide nextTurn)        ;;Parametros: lista del jugador
+(provide drawCard)        ;;Parametros: jugador, lista del jugador, mazo.
+(provide winners?)
 
 ;; #################################################################################
 ;; #################################################################################
-
-
-
-;; #################################################################################
-;; FUNCIONES AUXILIARES
-;; #################################################################################
-
-;; Funcion tamano-lista
-;; Recibe una lista y devuelve su tamano
-;; Entradas: lista
-;; Salida : tamaño de la lista
-
-(define (tamano-lista lista)
-  (cond ((list? lista)
-        (tamano-lista-aux 0 lista))
-        (else
-         '(Error: Se requiere una lista como parametro))))
-
-(define (tamano-lista-aux x lista)
-  (cond ((null? lista)
-         x)
-        (else
-          (tamano-lista-aux (+ x 1) (cdr lista)))))
-
-
-;; Funcion miembro
-;; Recibe un elemento y una lista y busca
-;; este elemento en la lista, devuelve #t
-;; si lo encuentra y #f si no.
-;; Entradas: x, lista
-;; Salida : bool
-
-(define (miembro? x lista)
-  (cond ((list? lista)
-        (miembro-aux x lista))
-        (else
-         '(Error: se necesita una lista como argumento))))
-
-(define (miembro-aux x lista)
-  (cond ((null? lista)
-         #f)
-        ((equal? x (car lista))
-         #t)
-        (else
-          (miembro-aux x (cdr lista)))))
-
-;; Funcion eliminar
-;; Recibe un elemento y una lista y busca
-;; este elemento en la lista y lo borra
-;; Entradas: x, lista
-;; Salida: lista sin elemento eliminado
-
-(define (eliminar x lista)
-  (cond ((miembro? x lista)
-         (eliminar-aux x lista '()))
-        (else
-         lista)))
-
-(define (eliminar-aux x lista listaFinal)
-  (cond ((null? lista)
-         (ordena-final listaFinal '()))
-        ((equal? x (car lista))
-          (eliminar-aux x (cdr lista) listaFinal))
-        (else
-          (eliminar-aux x (cdr lista) (cons (car lista) listaFinal))
-          )))
-
-(define (ordena-final lista listaFinal)
-  (cond ((null? lista)
-         listaFinal)
-        (else
-         (ordena-final (cdr lista) (cons (car lista) listaFinal)))))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Funciones disponibles del lenguaje:
-;; Length : Devuelve el tamaño de una lista
-;; Shuffle : Desordena una lista
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 ;; Se define una lista que guarda las cartas en orden
@@ -157,6 +73,7 @@
 ;; Funcion dar-carta-jugador
 ;; Da una carta a un jugador y devuelve la lista con todos los jugadores y el jugador con la carta nueva actualizado
 ;; Entradas: jugador = nombre del jugador "jugador", listaJugadores, mazo
+;; Salida: lista con todos los jugadores y el jugador con la carta nueva actualizado
 (define (dar-carta-jugador jugador listaJugadores mazo)
   (dar-carta-jugador-aux jugador listaJugadores mazo '()))
 
@@ -226,7 +143,6 @@
 (define (getPlayerDeck player)
   (caddr player))
 
-
 ;; getCardsTotalValue
 ;; Retorna la suma total de todas las cartas del jugador,tomando en cuenta todas las particularidades del juego.
 ;; Input: playerCards - cartas del jugador.
@@ -234,12 +150,24 @@
 (define (getCardsTotalValue playerCards)
   (cond [(null? playerCards) 0]
         [(blackjack? playerCards) "Black-Jack"]
-        [else (cardsTotalValue_aux playerCards 0)]))
-(define (cardsTotalValue_aux playerCards total)
-  (cond [(null? playerCards) total]
-        [else ;recorre la lista de cartas y suma al total el valor de la carta actual.
-         (cardsTotalValue_aux (cdr playerCards) (+ total (checkCardValue (getValue (car playerCards)) total)))]))
+        [else (cardsTotalValue_aux playerCards 0 0)]))
 
+(define (cardsTotalValue_aux playerCards total AsCounter)
+  (cond [(null? playerCards) (cardsTotalValuePlusAs total AsCounter (+ total AsCounter))]
+        [(= 1 (getValue (car playerCards))) (cardsTotalValue_aux (cdr playerCards) total (+ AsCounter 1))]
+        [else ;recorre la lista de cartas y suma al total el valor de la carta actual.
+         (cardsTotalValue_aux (cdr playerCards) (+ total (checkCardValue (getValue (car playerCards)) total)) AsCounter)]))
+
+;; Funcion auxiliar para ayudar a la funcion getCardsTotalValue a sumar el valor de las As correctamente.
+;; Retorna el valor final sumando las As de la baraja. Considerando que no se pase de 21 si alguna de ellas vale 11.
+;; Input: total - valor total, totalPlusAsCounter - valor total mas el numero de As.
+(define (cardsTotalValuePlusAs total AsCounter totalPlusAsCounter)
+  (cond [(zero? AsCounter)
+         (cond
+           [(< 21 total) totalPlusAsCounter] ;Si con una A de 11 se pasa de 21, retorna total con A de 1.
+           [else total])]                                
+        [else (cardsTotalValuePlusAs (+ total (checkCardValue 1 total)) (- AsCounter 1) totalPlusAsCounter)]))
+        
 ;; blackjack?
 ;; Verifica si la suma de las cartas de un jugador es blackjack.
 ;; Input: playerCards - cartas del jugador.
@@ -261,16 +189,20 @@
         [(and (= 1 value) (>= 21 (+ total 11))) 11] ;As - vale 11 (cuando si se suma es igual o menor a 21).
         [else value])) ;(2-3-4-5-6-7-8-9-10) - valen su normal.
 
+; '("crupier" 0 ((P 3) (P 2)))
+
 ;; Turno crupier
 ;; Analiza si la puntuacion del crupier es menor a 16 para solicitar otra carta
 ;; o de lo contrario plantarse
 (define (turno-crupier crupierDeck mazo)
-  (cond ((equal? (getCardsTotalValue crupierDeck) "Black-Jack")
-         (crupierDeck ))
-        ((<= (getCardsTotalValue crupierDeck) 16)
+  (cond ((equal? (getCardsTotalValue (caddr crupierDeck)) "Black-Jack")
+         (updateScore crupierDeck ))
+        ((equal? (cadr crupierDeck) "Black-Jack")
+         (updateScore crupierDeck ))
+        ((<= (getCardsTotalValue (caddr crupierDeck)) 16)
          (dar-carta crupierDeck mazo))
         (else
-         crupierDeck)))
+         (updateScore crupierDeck))))
 
 ;; updateScores
 ;; Actualiza los puntajes de los jugadores y el crupier.
@@ -278,6 +210,44 @@
 ;; Output: lista correspondiente al jugador con su puntuación actualizada.
 (define (updateScore player)
   (list (getPlayerName player) (getCardsTotalValue (getPlayerDeck player)) (getPlayerDeck player)))
+
+;; updatePlayer
+;; Función que recibe un jugador y retorna la lista de jugadores con el jugador actualizado.
+;; Input: player - jugador a actualizar, playersList - listajugadores a actualizar.
+;; Output: lista de jugadores actualizada.
+(define (updatePlayerInList player playersList)
+  (cond ((null? playersList) '())
+        [(equal? (getPlayerName player) (getPlayerName (car playersList)))
+            (append (list player) (updatePlayerInList player (cdr playersList)))]
+        [else
+            (append (list (car playersList)) (updatePlayerInList player (cdr playersList)))]))
+
+;; visibleDeck
+;; Retorna la puntuación de las visibles del jugador.
+;; Input: player
+;; Output: puntuacion visible del jugador.
+(define (visibleDeck player)
+  (getCardsTotalValue (cdr (getPlayerDeck player))))
+
+;; drawCard
+;; Funcion que agrega una carta al mazo del jugador recibido como parametro.
+;; Input: player - jugador, playersList - lista de jugadores, mazo.
+;; Output: bool, si puede seguir pidiendo, tira verdadero y si no, tira false. Ademas de la lista de jugadores actualizada.
+(define (drawCard player playersList deck)
+  (drawCard_aux (updateScore (dar-carta player deck)) playersList)) ;agregamos una carta al jugador y se pasa a la funcion auxiliar.
+
+(define (drawCard_aux player playersList)
+  ;una vez dada la carta el jugador se manda a verificar si puede pedir otra vez, #t si, #f no.
+   (list (keepDrawing player) (updatePlayerInList player playersList)))
+
+;; keepDrawing
+;; Función que verifica si las cartas visibles del jugador suman o se pasan de 21.
+;; Input: player - jugador.
+;; Output: #t si no se pasa, #f si es 21 o se pasa.
+(define (keepDrawing player)
+  (cond [(equal? "Black-Jack" [getCardsTotalValue (cdr (getPlayerDeck player))]) #f]
+        [(<= 21 [getCardsTotalValue (cdr (getPlayerDeck player))]) #f]
+        [else #t]))
 
 ;; winners?
 ;; Retorna el ganador o los ganadores de la ronda.
@@ -305,13 +275,7 @@
     [(< (getPlayerScore crupier) (getPlayerScore player)) (list (list (getPlayerName player) (getPlayerScore player)))] ;si tiene mas que el crupier, gana.
     [else '()]))
 
-;; nextTurn
-;; Función que verifica si las cartas visibles del jugador suman o se pasan de 21.
-;; Input: player - jugador.
-;; Output: #f si no se pasa, #t si es 21 o se pasa.
-(define (nextTurn player)
-  (cond [(<= 21 [getCardsTotalValue (cdr (getPlayerDeck player))]) #t]
-        [else #f]))
+
 
 ;-------------------Pruebas-------------------
 
@@ -337,17 +301,56 @@
 ;(getCardsTotalValue '((D 12) (A 13) (C 1))) ;21
 ;(getCardsTotalValue '((D 1) (D 1) (D 1))) ;13
 
+;(updateScore '("Player1" 0 ((A 1) (C 12))))
+;(updateScore '("Player2" 0 ((A 2) (C 5))))
+;(updateScore '("Player3" 0 ((A 3) (C 12))))
+
 ;(turno-crupier '((C 1) (A 5) (C 1)) (shuffle mazo))
 ;(turno-crupier '((C 1) (A 2) (P 1)) (shuffle mazo))
 ;(turno-crupier '((C 1) (A 2) (P 1) (H 1)) (shuffle mazo))
 ;(turno-crupier '((C 1) (A 9)) (shuffle mazo))
 
-
-(define listPlayers  '(("Player1" 0 ((A 1) (C 12))) ("Player2" 0 ((A 1) (C 5))) ("Player3" 0 ((A 1) (C 8)))))
-(define crupier  '("Crupier" "Black-Jack" ((D 11) (C 9))))
 ;(victoryCondition (cadr listPlayers) crupier)
+
+
+;(visibleDeck (car listPlayers))
+;(visibleDeck (cadr listPlayers))
+;(visibleDeck (caddr listPlayers))
+
+(define deck '((T 1) (D 2) (T 3) (C 4) (A 5)))
+(define listPlayers  '(("Player1" 0 ((A 1) (A 2) (A 7)))
+                       ("Player2" 0 ((A 6) (A 5) (T 1)))
+                       ("Player3" 0 ((A 1) (A 7)))
+                      ))
+(define player '("Player3" "Nico-Nico-Ni" ((* *) (* *) (* *))))
+(define crupier  '("Crupier" 5 ((D 11) (C 9))))
+
+"Jugadores:"
+listPlayers
+
+"Acciones:"
+
+
+;(getCardsTotalValue (getPlayerDeck (cadr listPlayers)))
+;(displayln "")
+;(displayln "")
+;"Pedir cartas jugador 1"
+;(drawCard (car listPlayers) listPlayers (shuffle deck))
+;(displayln "")
+
+;"Pedir cartas jugador 2"
+;(drawCard (cadr listPlayers) listPlayers (shuffle deck))
+;(displayln "")
+
+;"Pedir cartas jugador 3"
+;(drawCard (caddr listPlayers) listPlayers (shuffle deck))
+;(displayln "")
+
+;"Ganadores:"
 ;(winners? listPlayers crupier)
 
-(updateScore '("Player1" 0 ((A 1) (C 12))))
-(updateScore '("Player2" 0 ((A 2) (C 5))))
-(updateScore '("Player3" 0 ((A 3) (C 12))))
+
+
+
+
+

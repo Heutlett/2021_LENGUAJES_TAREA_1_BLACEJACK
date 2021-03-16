@@ -7,15 +7,6 @@
 
 (require "Logica_BlaCEjack.rkt")
 
-;Condición de que el juego comenzó
-(define gameStart #f)
-
-; Función que dice si el juego comenzó o no
-
-(define (asignar_gameStart bool)
-    (set! gameStart (cons bool gameStart))
-)
-
 ;; ############################################################################
 ;; Variables de la interfaz
 ;; ############################################################################
@@ -29,6 +20,16 @@
 ;; 11 : J
 ;; 12 : Q
 ;; 13 : K
+
+;; Variable que guarda el estado del turno actual
+
+(define turno 0)
+
+;; Aumenta el turno en 1
+(define (aumentaTurno)
+  (set! turno (+ 1 turno)))
+
+   
 (define mazo '())
 
 ;; Funcion que acomoda el maso con todas las cartas.
@@ -61,50 +62,60 @@
     (set! listaJugadores lista)
 )
 
-;; Pruebas para manejar las variables
 
-;; listaJugadores
+; #############################################################################################
+; #############################################################################################
 
-;; (actualizarListaJugadores '( ((A 1) (A 5)) ((A 2) (D 1)) ((A 3) (P 4)) ))
+; FUNCIONES DE CONTROL DE LA INTERFAZ
 
-;; listaJugadores
-
-
-"Simulacion juego del juego"
-"Se inicia con tres jugadores sin cartas y el crupier"
-(actualizarListaJugadores (bCEj 3))
-listaJugadores
-crupier
-"Se barajan las cartas"
-(setDeck)
-(actualizarMazo (shuffle mazo))
-"Ahora se reparten las primeras dos cartas a los jugadores"
-(actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
-(actualizarMazo (cdddr mazo))
-(actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
-(actualizarMazo (cdddr mazo))
-listaJugadores
-"Ahora se reparten las primeras dos cartas del crupier"
-
-(actualizarCrupier (dar-carta crupier  mazo))
-(actualizarMazo (cdr mazo))
-(actualizarCrupier (dar-carta crupier  mazo))
-(actualizarMazo (cdr mazo))
-crupier
+; #############################################################################################
+; #############################################################################################
 
 
+; Define el inicio del juego asignando a turno el valor de 1, esto indica que es el turno del
+; jugador1.
 
-;crupier
-;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))
-;crupier
-;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))
-;crupier
-;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))
-;crupier
-;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))
-;crupier
-;(actualizarCrupier (turno-crupier crupier (shuffle mazo)))
-;crupier
+(define (iniciarJuego)
+  (aumentaTurno))
+
+; Funcion: boton-pedir
+; Esta funcion es la accion del boton pedir en la interfaz, pedirá una carta para el jugador
+; que corresponde segun el turno actual, en caso de que el jugador que pide la carta sume una
+; puntuacion mayor a 21 con sus cartas volteadas se lanzará un aviso de que ha perdido y se
+; aumentará en 1 el valor del turno, haciendo que continue el siguiente jugador.
+
+(define (boton-pedir listaJugadores mazo)
+  (cond ((= turno 1)
+         (pedirCartaJugador (car listaJugadores) listaJugadores mazo))
+        ((and (= turno 2) (>= (length listaJugadores) 2))   
+         (pedirCartaJugador (cadr listaJugadores) listaJugadores mazo))
+        ((and (= turno 3) (>= (length listaJugadores) 3))   
+         (pedirCartaJugador (caddr listaJugadores) listaJugadores mazo))
+        ((and (= turno 4) (>= (length listaJugadores) 3) (not (equal? (cadr crupier) "Black-Jack")) (<= (cadr crupier) 16) )   
+         (pedirCartaCrupier crupier mazo))
+        ((and (= turno 4) (>= (length listaJugadores) 3) (equal? (cadr crupier) "Black-Jack"))   
+         (winners? listaJugadores crupier))
+        ((and (= turno 4) (>= (length listaJugadores) 3) (>= (cadr crupier) 16))   
+         (winners? listaJugadores crupier))))
+
+(define (pedirCartaCrupier crupier mazo)
+  (and (actualizarMazo (cdr mazo)) (actualizarCrupier (turno-crupier crupier  mazo))))
+
+
+(define (pedirCartaJugador jugador listaJugadores mazo)
+  (cond ((equal? #t (car(drawCard jugador listaJugadores mazo )))
+          (and (actualizarMazo (cdr mazo)) (actualizarListaJugadores(cadr(drawCard jugador listaJugadores mazo )))))
+        (else
+         (and (actualizarMazo (cdr mazo)) (actualizarListaJugadores(cadr(drawCard jugador listaJugadores mazo ))) (aumentaTurno)  ))))
+
+; Funcion boton-plantarse
+
+(define (boton-plantarse)
+  (aumentaTurno))
+
+; #############################################################################################
+; #############################################################################################
+
 
 ;*************************GUI*******************************
 
