@@ -25,7 +25,7 @@
 
 (define turno 0)
 
-(define espacios-fila 5)
+(define espacios-fila 4)
 
 ;; Aumenta el turno en 1
 (define (aumentaTurno)
@@ -65,9 +65,22 @@
     (set! listaJugadores lista)
 )
 
+;; Definir final
+(define (establerTurnoFinal)
+  (set! turno 5))
+
 ;; Establecer turno crupier
-(define (establecerTurnoCrupier)
+(define (establerTurnoCrupier)
   (set! turno 4))
+
+; Función para recorrer una lista
+(define (recorrer n l)
+  (cond ( (null? l)
+          #f)
+        ( (= n 0)
+          (car l))
+        ( else
+          (recorrer (- n 1) (cdr l)))))
 
 ; #############################################################################################
 ; #############################################################################################
@@ -90,10 +103,11 @@
 ; puntuacion mayor a 21 con sus cartas volteadas se lanzará un aviso de que ha perdido y se
 ; aumentará en 1 el valor del turno, haciendo que continue el siguiente jugador.
 
+;(establerTurnoFinal)
+;(winners? (updateAllPlayers listaJugadores) (updateScore crupier))
+
 (define (boton-pedir listaJugadores mazo)
-  (cond ((or (and (= turno 2) (= (length listaJugadores) 1)) (and (= turno 3) (= (length listaJugadores) 2)) )
-         (and (establecerTurnoCrupier) (boton-pedir listaJugadores mazo) ))
-        ((= turno 1)
+  (cond ((= turno 1)
          (pedirCartaJugador (car listaJugadores) listaJugadores mazo))
         ((and (= turno 2) (>= (length listaJugadores) 2))   
          (pedirCartaJugador (cadr listaJugadores) listaJugadores mazo))
@@ -103,9 +117,17 @@
          (cond ((and (not (equal? (cadr crupier) "Black-Jack")) (<= (cadr crupier) 16) )   
             (and (pedirCartaCrupier crupier mazo) (boton-pedir listaJugadores mazo)))
            ((equal? (cadr crupier) "Black-Jack")   
-            (winners? listaJugadores crupier))
+            (establerTurnoFinal))
            ((and (>= (cadr crupier) 16))   
-            (winners? listaJugadores crupier))))))
+            (establerTurnoFinal))))))
+
+(define (verifica-turno)
+  (cond ((or (and (= turno 2) (= (length listaJugadores) 1)) (and (= turno 3) (= (length listaJugadores) 2)) )
+         (and (establerTurnoCrupier) (boton-pedir listaJugadores mazo) ))))
+
+(define (mostrar-ganadores)
+  (cond ((= turno 5)
+  (winners? (updateAllPlayers listaJugadores) (updateScore crupier)))))
 
 (define (pedirCartaCrupier crupier mazo)
   (and (actualizarMazo (cdr mazo)) (actualizarCrupier (turno-crupier crupier  mazo))))
@@ -115,15 +137,23 @@
   (cond ((equal? #t (car(drawCard jugador listaJugadores mazo )))
           (and (actualizarMazo (cdr mazo)) (actualizarListaJugadores(cadr(drawCard jugador listaJugadores mazo )))))
         (else
-         (and (actualizarMazo (cdr mazo)) (actualizarListaJugadores(cadr(drawCard jugador listaJugadores mazo ))) (aumentaTurno)  ))))
+         (and (actualizarMazo (cdr mazo)) (actualizarListaJugadores(cadr(drawCard jugador listaJugadores mazo ))) (and (aumentaTurno) )  (verifica-turno)))))
+
 ; Funcion boton-plantarse
 
 (define (boton-plantarse)
-  (aumentaTurno))
+  (cond ((and (= turno 1) (= (length listaJugadores) 1)
+   (establerTurnoCrupier)))
+  ((and (= turno 2) (= (length listaJugadores) 2))   
+   (establerTurnoCrupier))
+  ((and (= turno 3) (= (length listaJugadores) 3))   
+   (establerTurnoCrupier))
+  (else
+  (aumentaTurno)
+  (set! espacios-fila 4))))
 
 ; #############################################################################################
 ; #############################################################################################
-
 
 
 ;Pruebas
@@ -231,6 +261,8 @@
                          (actualizarCrupier (dar-carta crupier  mazo))
                          (actualizarMazo (cdr mazo))
 
+                         (primerasCartas listaJugadores crupier)
+
                          listaJugadores
                          crupier
                          
@@ -254,6 +286,8 @@
                          (actualizarMazo (cdr mazo))
                          (actualizarCrupier (dar-carta crupier  mazo))
                          (actualizarMazo (cdr mazo))
+
+                         (primerasCartas listaJugadores crupier)
 
                          listaJugadores
                          crupier
@@ -279,6 +313,8 @@
                          (actualizarCrupier (dar-carta crupier  mazo))
                          (actualizarMazo (cdr mazo))
 
+                         (primerasCartas listaJugadores crupier)
+
                          listaJugadores
                          crupier
                          
@@ -299,7 +335,7 @@
              [label "Plantarse"]
              [callback (lambda (button event)
                          (send msg set-label "SE PLANTÓ")
-                         (pasar))])
+                         (boton-plantarse))])
 ;-------------------------------------------------------------------
 
 ;==========================ESPACIOS DE JUEGO==========================
@@ -362,14 +398,14 @@
 
 ;========================Espacio para las cartas==================
 
+
 ;Dibuja las cartas en el espacio del jugador o crupier asignado
 ;con la variable espacios-fila solo permite posicionar 5 cartas en fila
 (define (dibujarCartas turno carta)
   (cond ( (<= espacios-fila 0)
-          (dibujarCartas-aux turno (string-append "cards/" carta ".png") 2)
-          )
+          (dibujarCartas-aux turno (string-append "cards/" (symbol->string (car carta)) (number->string (cadr carta)) ".png") 2))
         ( else
-          (dibujarCartas-aux turno (string-append "cards/" carta ".png") 1)
+          (dibujarCartas-aux turno (string-append "cards/" (symbol->string (car carta)) (number->string (cadr carta)) ".png") 1)
           (set! espacios-fila (sub1 espacios-fila)))))
 
 ;Función auxiliar, comprueba el jugador y la zona en donde debe graficar
@@ -401,13 +437,26 @@
         ))
 
 ;Definiciones temporales para realizar pruebas
-(define t 0)
-(define c "T12")
+;(define t 0)
+(define c '(T 12))
 
 ;Metodo llamado por plantarse para realziar pruebas
 (define (pasar)
-  (set! t (add1 t))
-  (set! espacios-fila 5))
+  ;(set! t (add1 t))
+  (set! espacios-fila 4))
+
+
+(define (primerasCartas lista crup)
+  (primerasCartas-aux 0 (+ (length lista) 1) (append lista (list crup))))
+
+(define (primerasCartas-aux t j lista)
+  (cond ( (equal? j t)
+          1)
+        ( else
+          (dibujarCartas (+ t 1) '(B 0))
+          (dibujarCartas (+ t 1) (cadr (recorrer 2 (recorrer t lista))))
+          (set! espacios-fila 4)
+          (primerasCartas-aux (+ t 1) j lista))))
 ;-----------------------------------------------------------------
 
 ;======================INFORMACION================================
