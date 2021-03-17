@@ -351,8 +351,6 @@
 ;listPlayers
 ;crupier
 
-(displayln "")
-"Acciones:"
 
 ;(getCardsTotalValue (getPlayerDeck (cadr listPlayers)))
 ;(displayln "")
@@ -371,17 +369,6 @@
 ;"Ganadores:"
 ;(winners? listPlayers crupier)
 
-(displayln "")
-"Jugadores"
-(updateAllPlayers listPlayers)
-
-(displayln "")
-"Crupier"
-(updateScore crupier)
-
-(displayln "")
-"Ganadores con Actualizacion"
-(winners? (updateAllPlayers listPlayers) (updateScore crupier))
 
 
 

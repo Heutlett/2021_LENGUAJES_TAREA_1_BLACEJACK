@@ -3,6 +3,7 @@
 
 (require racket/gui)
 (require racket/include)
+(require (prefix-in htdp: 2htdp/image))
 
 (require "Logica_BlaCEjack.rkt")
 
@@ -24,21 +25,14 @@
 
 (define turno 0)
 
+(define espacios-fila 4)
+
 ;; Aumenta el turno en 1
 (define (aumentaTurno)
-  (set! turno (+ 1 turno)))
+  (set! turno (+ 1 turno))
+  (set! espacios-fila 5))
 
-
-;; Establecer turno crupier
-(define (establerTurnoCrupier)
-  (set! turno 4))
-
-;; Definir final
-(define (establerTurnoFinal)
-  (set! turno 5))
-
-
-
+   
 (define mazo '())
 
 ;; Funcion que acomoda el maso con todas las cartas.
@@ -71,6 +65,22 @@
     (set! listaJugadores lista)
 )
 
+;; Definir final
+(define (establerTurnoFinal)
+  (set! turno 5))
+
+;; Establecer turno crupier
+(define (establerTurnoCrupier)
+  (set! turno 4))
+
+; Función para recorrer una lista
+(define (recorrer n l)
+  (cond ( (null? l)
+          #f)
+        ( (= n 0)
+          (car l))
+        ( else
+          (recorrer (- n 1) (cdr l)))))
 
 ; #############################################################################################
 ; #############################################################################################
@@ -139,45 +149,328 @@
   ((and (= turno 3) (= (length listaJugadores) 3))   
    (establerTurnoCrupier))
   (else
-  (aumentaTurno))))
+  (aumentaTurno)
+  (set! espacios-fila 4))))
 
 ; #############################################################################################
 ; #############################################################################################
 
-; PRUEBAS
 
-; #############################################################################################
-; #############################################################################################
-
-(actualizarListaJugadores (bCEj 2))
-listaJugadores
-crupier
-"Se barajan las cartas"
-(setDeck)
-(actualizarMazo (shuffle mazo))
-turno
-"Ahora se reparten las primeras dos cartas a los jugadores"
-(actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
-(actualizarMazo (cdddr mazo))
-(actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
-(actualizarMazo (cdddr mazo))
-listaJugadores
-"Ahora se reparten las primeras dos cartas del crupier"
-
-(actualizarCrupier (dar-carta crupier  mazo))
-(actualizarMazo (cdr mazo))
-(actualizarCrupier (dar-carta crupier  mazo))
-(actualizarMazo (cdr mazo))
-crupier
+;Pruebas
 
 (iniciarJuego)
 
+
 "Empieza la partida y los jugadores piden cartas hasta que llega el turno del crupier"
 
-(boton-pedir listaJugadores mazo)
-listaJugadores
-crupier
-turno
 
 
-; (null? (boton-pedir listaJugadores mazo))
+
+
+
+;*************************GUI*******************************
+
+
+
+; Crea el marco de juego
+(define frame (new frame%
+                   [label "BlaCE Jack"]
+                   [width 900]
+                   [height 800]))
+
+; Crea el marco principal
+(define Firstframe (new frame%
+                   [label "BlaCE Jack"]
+                   [width 400]
+                   [height 200]
+                   ))
+
+; Texto que cambia según el evento(Para realizar pruebas)
+(define msg (new message% [parent frame]
+                          [label "No events so far..."]))
+
+
+;=========================PANELES=====================================
+
+; Crea panel que contiene el seleccionador de jugadores
+(define panel-label-cantidad (new horizontal-panel%
+                                  [parent Firstframe]
+                                  [alignment '(center center)]))
+(define panel-botones-cantidad (new horizontal-panel%
+                                    [parent Firstframe]
+                                    [alignment '(center center)]))
+
+(define cantidad (new message% [parent panel-label-cantidad]
+                          [label "Seleccione la cantidad de Jugadores"]))
+
+; Crea panel que contiene el sitio de las cartas del crupier
+(define panel-juego-alto (new horizontal-panel% [parent frame] [min-height 200]))
+
+(define panel-crupierL (new vertical-panel% [parent panel-juego-alto] [min-width 200]))
+(define panel-crupierM (new vertical-panel% [parent panel-juego-alto]))
+(define panel-crupierR (new vertical-panel% [parent panel-juego-alto] [min-width 200]))
+
+; Crea panel que contiene el sitio de las cartas del jugador 1 y 3
+(define panel-juego-medio (new horizontal-panel% [parent frame] [min-height 200]))
+
+(define panel-juego-medioL (new vertical-panel% [parent panel-juego-medio]))
+(define panel-juego-medioM (new vertical-panel% [parent panel-juego-medio] [min-width 200]))
+(define panel-juego-medioR (new vertical-panel% [parent panel-juego-medio]))
+
+; Crea panel que contiene el sitio de las cartas del jugador 2
+(define panel-juego-bajo (new horizontal-panel% [parent frame] [min-height 200]))
+
+(define panel-juego-bajoL (new vertical-panel% [parent panel-juego-bajo] [min-width 200]))
+(define panel-juego-bajoM (new vertical-panel% [parent panel-juego-bajo]))
+(define panel-juego-bajoR (new vertical-panel% [parent panel-juego-bajo] [min-width 200]))
+
+; Crea panel que contiene a los botones "Pedir" y "Plantarse"
+(define panel-display (new horizontal-panel%
+                           [parent frame]
+                           [stretchable-height #f]))
+
+(define panel-info (new vertical-panel%
+                           [parent panel-display]
+                           [alignment '(center center)]))
+
+(define panel-botones (new vertical-panel%
+                           [parent panel-display]
+                           [alignment '(center center)]))
+
+
+;-------------------------------------------------------------------------
+
+;===================BOTONES====================================
+
+; Crea botón "1"
+(new button% [parent panel-botones-cantidad]
+             [label "1"]
+             [callback (lambda (button event)
+                         
+                         (actualizarListaJugadores (bCEj 1))
+                         (setDeck)
+                         (actualizarMazo (shuffle mazo))
+
+                         (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+                         (actualizarMazo (cdddr mazo))
+                         (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+                         (actualizarMazo (cdddr mazo))
+
+                         (actualizarCrupier (dar-carta crupier  mazo))
+                         (actualizarMazo (cdr mazo))
+                         (actualizarCrupier (dar-carta crupier  mazo))
+                         (actualizarMazo (cdr mazo))
+
+                         (primerasCartas listaJugadores crupier)
+
+                         listaJugadores
+                         crupier
+                         
+                         (send Firstframe show #f)
+                         (send frame show #t))])
+; Crea botón "2"
+(new button% [parent panel-botones-cantidad]
+             [label "2"]
+             [callback (lambda (button event)
+                         
+                         (actualizarListaJugadores (bCEj 2))
+                         (setDeck)
+                         (actualizarMazo (shuffle mazo))
+
+                         (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+                         (actualizarMazo (cdddr mazo))
+                         (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+                         (actualizarMazo (cdddr mazo))
+
+                         (actualizarCrupier (dar-carta crupier  mazo))
+                         (actualizarMazo (cdr mazo))
+                         (actualizarCrupier (dar-carta crupier  mazo))
+                         (actualizarMazo (cdr mazo))
+
+                         (primerasCartas listaJugadores crupier)
+
+                         listaJugadores
+                         crupier
+                         
+                         (send Firstframe show #f)
+                         (send frame show #t))])
+; Crea botón "3"
+(new button% [parent panel-botones-cantidad]
+             [label "3"]
+             [callback (lambda (button event)
+                         
+                         (actualizarListaJugadores (bCEj 3))
+                         (setDeck)
+                         (actualizarMazo (shuffle mazo))
+
+                         (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+                         (actualizarMazo (cdddr mazo))
+                         (actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
+                         (actualizarMazo (cdddr mazo))
+
+                         (actualizarCrupier (dar-carta crupier  mazo))
+                         (actualizarMazo (cdr mazo))
+                         (actualizarCrupier (dar-carta crupier  mazo))
+                         (actualizarMazo (cdr mazo))
+
+                         (primerasCartas listaJugadores crupier)
+
+                         listaJugadores
+                         crupier
+                         
+                         (send Firstframe show #f)
+                         (send frame show #t))])
+
+
+; Crea botón "PEDIR"
+(new button% [parent panel-botones]
+             [label "Pedir"]
+             [callback (lambda (button event)
+                         (send msg set-label "PIDIÓ CARTA")
+                         (boton-pedir listaJugadores mazo)
+                         (dibujarCartas turno c))])
+
+; Crea botón "PLANTARSE"
+(new button% [parent panel-botones]
+             [label "Plantarse"]
+             [callback (lambda (button event)
+                         (send msg set-label "SE PLANTÓ")
+                         (boton-plantarse))])
+;-------------------------------------------------------------------
+
+;==========================ESPACIOS DE JUEGO==========================
+; Crea espacio de juego crupier
+(define panel-crupier (new horizontal-panel%
+                           [parent panel-crupierM]
+                           [stretchable-height #f]
+                           [alignment '(center center)]
+                           ))
+
+(define panel-crupier-juego1 (new horizontal-panel% [parent panel-crupierM] [style '(border)]))
+(define panel-crupier-juego2 (new horizontal-panel% [parent panel-crupierM] [style '(border)]))
+
+(define msgCrupier (new message% [parent panel-crupier]
+                          [label "Crupier"]))
+
+
+; Crea espacio de jugador1
+(define panel-jugador1 (new horizontal-panel%
+                           [parent panel-juego-medioL]
+                           [stretchable-height #f]
+                           [alignment '(center center)]
+                           ))
+
+(define panel-jugador1-juego1 (new horizontal-panel% [parent panel-juego-medioL] [style '(border)]))
+(define panel-jugador1-juego2 (new horizontal-panel% [parent panel-juego-medioL] [style '(border)]))
+
+(define msgJugador1 (new message% [parent panel-juego-medioL]
+                          [label "Jugador1"]))
+
+
+; Crea espacio de jugador2
+(define panel-jugador2 (new horizontal-panel%
+                           [parent panel-juego-bajoM]
+                           [stretchable-height #f]
+                           [alignment '(center center)]
+                           ))
+
+(define panel-jugador2-juego1 (new horizontal-panel% [parent panel-juego-bajoM] [style '(border)]))
+(define panel-jugador2-juego2 (new horizontal-panel% [parent panel-juego-bajoM] [style '(border)]))
+
+(define msgJugador2 (new message% [parent panel-juego-bajoM]
+                          [label "Jugador2"]))
+
+
+; Crea espacio de jugador3
+(define panel-jugador3 (new horizontal-panel%
+                           [parent panel-juego-medioR]
+                           [stretchable-height #f]
+                           [alignment '(center center)]
+                           ))
+
+(define panel-jugador3-juego1 (new horizontal-panel% [parent panel-juego-medioR] [style '(border)]))
+(define panel-jugador3-juego2 (new horizontal-panel% [parent panel-juego-medioR] [style '(border)]))
+
+(define msgJugador3 (new message% [parent panel-juego-medioR]
+                          [label "Jugador3"]))
+
+;----------------------------------------------------------------
+
+;========================Espacio para las cartas==================
+
+
+;Dibuja las cartas en el espacio del jugador o crupier asignado
+;con la variable espacios-fila solo permite posicionar 5 cartas en fila
+(define (dibujarCartas turno carta)
+  (cond ( (<= espacios-fila 0)
+          (dibujarCartas-aux turno (string-append "cards/" (symbol->string (car carta)) (number->string (cadr carta)) ".png") 2))
+        ( else
+          (dibujarCartas-aux turno (string-append "cards/" (symbol->string (car carta)) (number->string (cadr carta)) ".png") 1)
+          (set! espacios-fila (sub1 espacios-fila)))))
+
+;Función auxiliar, comprueba el jugador y la zona en donde debe graficar
+(define (dibujarCartas-aux turno carta zona)
+  (cond ( (and (equal? turno 4) (equal? zona 1))
+          (new message% [parent panel-crupier-juego1]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 4) (equal? zona 2))
+          (new message% [parent panel-crupier-juego2]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 1) (equal? zona 1))
+          (new message% [parent panel-jugador1-juego1]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 1) (equal? zona 2))
+          (new message% [parent panel-jugador1-juego2]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 2) (equal? zona 1))
+          (new message% [parent panel-jugador2-juego1]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 2) (equal? zona 2))
+          (new message% [parent panel-jugador2-juego2]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 3) (equal? zona 1))
+          (new message% [parent panel-jugador3-juego1]
+                        [label (read-bitmap carta)]))
+        ( (and (equal? turno 3) (equal? zona 2))
+          (new message% [parent panel-jugador3-juego2]
+                        [label (read-bitmap carta)]))
+        ))
+
+;Definiciones temporales para realizar pruebas
+;(define t 0)
+(define c '(T 12))
+
+;Metodo llamado por plantarse para realziar pruebas
+(define (pasar)
+  ;(set! t (add1 t))
+  (set! espacios-fila 4))
+
+
+(define (primerasCartas lista crup)
+  (primerasCartas-aux 0 (+ (length lista) 1) (append lista (list crup))))
+
+(define (primerasCartas-aux t j lista)
+  (cond ( (equal? j t)
+          1)
+        ( else
+          (dibujarCartas (+ t 1) '(B 0))
+          (dibujarCartas (+ t 1) (cadr (recorrer 2 (recorrer t lista))))
+          (set! espacios-fila 4)
+          (primerasCartas-aux (+ t 1) j lista))))
+;-----------------------------------------------------------------
+
+;======================INFORMACION================================
+
+(new message% [parent panel-info]
+                          [label "Turno de :Jugador 1"])
+
+(new message% [parent panel-info]
+                          [label "Puntaje actual: 10"])
+
+;-----------------------------------------------------------------
+
+ 
+; Método que muestra el marco
+(send Firstframe show #t)
+
+;***********************************************************
