@@ -321,7 +321,6 @@
                          (send Firstframe show #f)
                          (send frame show #t))])
 
-
 ; Crea botón "PEDIR"
 (new button% [parent panel-botones]
              [label "Pedir"]
@@ -461,11 +460,11 @@
 
 ;======================INFORMACION================================
 
-(new message% [parent panel-info]
-                          [label "Turno de :Jugador 1"])
+(define lbl-turno (new message% [parent panel-info]
+                          [label "Turno de :Jugador 1"]))
 
-(new message% [parent panel-info]
-                          [label "Puntaje actual: 10"])
+(define lbl-puntos (new message% [parent panel-info]
+                          [label "Puntaje actual: 10"]))
 
 ;-----------------------------------------------------------------
 
