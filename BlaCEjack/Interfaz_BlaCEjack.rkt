@@ -32,7 +32,13 @@
 ;; Establecer turno crupier
 (define (establerTurnoCrupier)
   (set! turno 4))
-   
+
+;; Definir final
+(define (establerTurnoFinal)
+  (set! turno 5))
+
+
+
 (define mazo '())
 
 ;; Funcion que acomoda el maso con todas las cartas.
@@ -87,6 +93,9 @@
 ; puntuacion mayor a 21 con sus cartas volteadas se lanzará un aviso de que ha perdido y se
 ; aumentará en 1 el valor del turno, haciendo que continue el siguiente jugador.
 
+;(establerTurnoFinal)
+;(winners? (updateAllPlayers listaJugadores) (updateScore crupier))
+
 (define (boton-pedir listaJugadores mazo)
   (cond ((= turno 1)
          (pedirCartaJugador (car listaJugadores) listaJugadores mazo))
@@ -98,14 +107,17 @@
          (cond ((and (not (equal? (cadr crupier) "Black-Jack")) (<= (cadr crupier) 16) )   
             (and (pedirCartaCrupier crupier mazo) (boton-pedir listaJugadores mazo)))
            ((equal? (cadr crupier) "Black-Jack")   
-            (winners? (updateAllPlayers listaJugadores) (updateScore crupier)))
+            (establerTurnoFinal))
            ((and (>= (cadr crupier) 16))   
-            (winners? (updateAllPlayers listaJugadores) (updateScore crupier)))))))
+            (establerTurnoFinal))))))
 
- (define (verifica-turno)
-    (cond ((or (and (= turno 2) (= (length listaJugadores) 1)) (and (= turno 3) (= (length listaJugadores) 2)) )
+(define (verifica-turno)
+  (cond ((or (and (= turno 2) (= (length listaJugadores) 1)) (and (= turno 3) (= (length listaJugadores) 2)) )
          (and (establerTurnoCrupier) (boton-pedir listaJugadores mazo) ))))
 
+(define (mostrar-ganadores)
+  (cond ((= turno 5)
+  (winners? (updateAllPlayers listaJugadores) (updateScore crupier)))))
 
 (define (pedirCartaCrupier crupier mazo)
   (and (actualizarMazo (cdr mazo)) (actualizarCrupier (turno-crupier crupier  mazo))))
@@ -168,4 +180,4 @@ crupier
 turno
 
 
-
+; (null? (boton-pedir listaJugadores mazo))
