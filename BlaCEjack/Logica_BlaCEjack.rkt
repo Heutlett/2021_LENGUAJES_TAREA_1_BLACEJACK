@@ -4,13 +4,16 @@
 ;; PROVIDES
 ;; #################################################################################
 
-(provide turno-crupier)   ;; Parametros: crupierDeck, mazo
-(provide bCEj)            ;; Parametros: cantidad de jugadores, de 1 a 3
-(provide reparte-cartas)  ;; Parametros: lista de jugadores, mazo
-(provide dar-carta)       ;; Parametros: nombre del jugador, listaDeJugadores, mazo
+(provide turno-crupier)    ;; Parametros: crupierDeck, mazo
+(provide bCEj)             ;; Parametros: cantidad de jugadores, de 1 a 3
+(provide reparte-cartas)   ;; Parametros: lista de jugadores, mazo
+(provide dar-carta)        ;; Parametros: nombre del jugador, listaDeJugadores, mazo
 (provide crea-crupier)
-(provide drawCard)        ;;Parametros: jugador, lista del jugador, mazo.
-(provide winners?)
+(provide drawCard)         ;; Parametros: jugador, lista del jugador, mazo.
+(provide updateScore)      ;; Parametros: lista de jugadores
+(provide updateAllPlayers) ;; Parametros: lista de jugadores
+(provide winners?)         ;; Parametros: jugadores y crupier con puntuacion actualizada.
+
 
 ;; #################################################################################
 ;; #################################################################################
@@ -222,6 +225,15 @@
         [else
             (append (list (car playersList)) (updatePlayerInList player (cdr playersList)))]))
 
+;; updateAllScores
+;; Actualiza los puntajes de los jugadores y el crupier.
+;; Input: playersList - jugadores.
+;; Output: lista con todos los jugadores actualizada.
+(define (updateAllPlayers playersList)
+  (cond ((null? playersList) '())
+        [else (append (list (updateScore (car playersList))) (updateAllPlayers (cdr playersList)))]))
+       
+
 ;; visibleDeck
 ;; Retorna la puntuación de las visibles del jugador.
 ;; Input: player
@@ -255,12 +267,12 @@
 ;; Output: lista con los ganadores de la ronda.
 (define (winners? playersList crupier)
   (cond ((null? playersList) "No hay jugadores")
-        [(equal? "Black-Jack" (getPlayerScore crupier)) (~a (getPlayerName crupier) " gana con " (getPlayerScore crupier))] ;si la casa tiene blackjack, gana la casa.
+        [(equal? "Black-Jack" (getPlayerScore crupier)) (list (list (getPlayerName crupier) (getPlayerScore crupier)))] ;si la casa tiene blackjack, gana la casa.
         (else (winners?_aux playersList crupier '()))))
 
 (define (winners?_aux playersList crupier winnersList)
-  (cond [(and (null? playersList) (null? winnersList)) (~a (getPlayerName crupier) " gana con " (getPlayerScore crupier))]
-        [(and (null? playersList) (not (null? winnersList))) winnersList] ;(~a "Gana(n) " winnersList)]
+  (cond [(and (null? playersList) (null? winnersList)) (list (list (getPlayerName crupier) (getPlayerScore crupier)))]
+        [(and (null? playersList) (not (null? winnersList))) winnersList]
         [else (winners?_aux (cdr playersList) crupier [append winnersList (victoryCondition (car playersList) crupier)]
    )]))                                            ;; (append '() '(("Player1" 10) ("Player2" 20)))
 
@@ -318,18 +330,20 @@
 ;(visibleDeck (caddr listPlayers))
 
 (define deck '((T 1) (D 2) (T 3) (C 4) (A 5)))
-(define listPlayers  '(("Player1" 0 ((A 1) (A 2) (A 7)))
-                       ("Player2" 0 ((A 6) (A 5) (T 1)))
-                       ("Player3" 0 ((A 1) (A 7)))
-                      ))
+(define listPlayers  '(("Player1" 0 ((C 12) (C 2) (C 5) (T 9)))
+                       ("Player2" 0 ((D 11) (C 11)))
+                       ("Player3" 0 ((D 11) (C 11) (C 2)))))
+
 (define player '("Player3" "Nico-Nico-Ni" ((* *) (* *) (* *))))
-(define crupier  '("Crupier" 5 ((D 11) (C 9))))
+(define crupier  '("Crupier" 0 ((P 3) (C 8) (D 8))))
 
-"Jugadores:"
-listPlayers
 
-"Acciones:"
+;"Jugadores:"
+;listPlayers
+;crupier
 
+;(displayln "")
+;"Acciones:"
 
 ;(getCardsTotalValue (getPlayerDeck (cadr listPlayers)))
 ;(displayln "")
@@ -348,7 +362,15 @@ listPlayers
 
 ;"Ganadores:"
 ;(winners? listPlayers crupier)
+ 
+;"Actualizar Jugadores"
+;(updateAllPlayers listPlayers)
 
+;"Actualizar Crupier"
+;(updateScore crupier)
+
+;"Ganadores con Actualizacion"
+;(winners? (updateAllPlayers listPlayers) (updateScore crupier))
 
 
 

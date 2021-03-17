@@ -98,9 +98,9 @@
          (cond ((and (not (equal? (cadr crupier) "Black-Jack")) (<= (cadr crupier) 16) )   
             (and (pedirCartaCrupier crupier mazo) (boton-pedir listaJugadores mazo)))
            ((equal? (cadr crupier) "Black-Jack")   
-            (winners? listaJugadores crupier))
+            (winners? (updateAllPlayers listaJugadores) (updateScore crupier)))
            ((and (>= (cadr crupier) 16))   
-            (winners? listaJugadores crupier))))))
+            (winners? (updateAllPlayers listaJugadores) (updateScore crupier)))))))
 
  (define (verifica-turno)
     (cond ((or (and (= turno 2) (= (length listaJugadores) 1)) (and (= turno 3) (= (length listaJugadores) 2)) )
