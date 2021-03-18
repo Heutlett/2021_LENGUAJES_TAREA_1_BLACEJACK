@@ -592,19 +592,19 @@
 ;Funciones para actualizar la información del turno
 
 (define (actTurno)
-  (cond ( (equal? turno 4)
+  (cond ((< 5 turno) (void))
+        ((equal? turno 4)
           (send lbl-turno set-label "Turno de: Crupier"))
-        ( else
+        (else
           (send lbl-turno set-label (string-append "Turno de: Jugador " (number->string turno))))))
 
 (define (actPuntos)
-  (cond ( (equal? turno 5)
-          (send lbl-puntos set-label "Juego finalizado"))
-        ( (equal? turno 4)
-          (send lbl-puntos set-label (string-append "Puntaje actual: " (number->string (cadr crupier)))))
-        ( else
-          (send lbl-puntos set-label (string-append "Puntaje actual: " (number->string (cadr (recorrer (- turno 1) listaJugadores))))))))
-
+  (cond ((equal? turno 5) (send lbl-puntos set-label "Juego finalizado"))
+        ((equal? turno 4) (send lbl-puntos set-label (string-append "Puntaje actual: " (actPuntos_aux (cadr crupier)))))
+        (else (send lbl-puntos set-label (string-append "Puntaje actual: " (actPuntos_aux (cadr (recorrer (- turno 1) listaJugadores))))))))
+(define (actPuntos_aux puntaje)
+  (cond [(number? puntaje) (number->string puntaje)]
+        [(string? puntaje) "Black Jack"]))
 ;-----------------------------------------------------------------
 
 
