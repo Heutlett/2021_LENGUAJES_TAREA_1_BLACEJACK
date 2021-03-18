@@ -175,6 +175,13 @@
                    [height 200]
                    ))
 
+; Crea el marco ganadores
+(define Winnersframe (new frame%
+                   [label "BlaCE Jack"]
+                   [width 400]
+                   [height 200]
+                   ))
+
 
 
 ; Método que muestra el marco
@@ -232,6 +239,14 @@
 (new message% [parent panel-juego-medioM]
                           [label (read-bitmap "cards/MAZO.png" )]
                           )
+
+; Crea panel que contiene el lugar de los ganadores
+(define panel-ganadores-lbl (new horizontal-panel% [parent Winnersframe] [alignment '(center center)]))
+(define panel-ganadores (new horizontal-panel% [parent Winnersframe] [alignment '(center center)]))
+
+;Mensajes del ganador
+(define lbl-ganadores (new message% [parent panel-ganadores-lbl] [label ""]))
+(define msg-ganadores (new message% [parent panel-ganadores] [label ""]))
 
 ;==========================BOTONES====================================
 
@@ -293,7 +308,8 @@
                          (actualizar_cartas listaJugadores)
                          (actTurno)
                          (actPuntos)
-                         (voltearActual))])
+                         (voltearActual)
+                         (verificarGane))])
 
 ; Crea botón "PLANTARSE"
 (new button% [parent panel-botones]
@@ -303,7 +319,9 @@
                          (boton-plantarse)
                          (actTurno)
                          (actPuntos)
-                         (voltearActual))])
+                         (actualizar_cartas listaJugadores)
+                         (voltearActual)
+                         (verificarGane))])
 
 ;---------------------------------------------------------------------
 
@@ -626,6 +644,18 @@
 (define (actPuntos_aux puntaje)
   (cond [(number? puntaje) (number->string puntaje)]
         [(string? puntaje) "Black Jack"]))
+
+
+(define (verificarGane)
+  (cond ((> turno 4)
+         (cond ((null? (cdr (mostrar-ganadores)))
+                (send lbl-ganadores set-label "EL GANADOR ES:")
+                (send msg-ganadores set-label (string-append (caar (mostrar-ganadores)) " con " (actPuntos_aux (cadar (mostrar-ganadores))))))
+               ( else
+                (send lbl-ganadores set-label "LOS GANADORES SON:")))
+         (send Winnersframe show #t))
+        ( else
+         (void))))
 ;-----------------------------------------------------------------
 
 
