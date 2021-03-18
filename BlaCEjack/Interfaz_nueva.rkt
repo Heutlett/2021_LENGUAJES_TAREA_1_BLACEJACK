@@ -270,6 +270,10 @@
   (actualizarCrupier (dar-carta crupier  mazo))
   (actualizarMazo (cdr mazo))
 
+  ;Actualiza los puntajes iniciales del juego.
+  (actualizarCrupier (updateScore crupier))
+  (actualizarListaJugadores (updateAllPlayers listaJugadores))
+
   (actualizar_cartas listaJugadores)
                          
   (send Firstframe show #f)

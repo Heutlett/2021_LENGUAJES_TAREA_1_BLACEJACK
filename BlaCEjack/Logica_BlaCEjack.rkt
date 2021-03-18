@@ -225,7 +225,7 @@
         [else
             (append (list (car playersList)) (updatePlayerInList player (cdr playersList)))]))
 
-;; updateAllScores
+;; updateAllPlayers
 ;; Actualiza los puntajes de los jugadores y el crupier.
 ;; Input: playersList - jugadores.
 ;; Output: lista con todos los jugadores actualizada.
