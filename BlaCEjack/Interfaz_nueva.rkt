@@ -581,7 +581,12 @@
          (send (car cartas-jugador2) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car (caddr (recorrer (- turno 1) listaJugadores))))) (number->string (cadr (car (caddr (recorrer (- turno 1) listaJugadores))))) ".png"))))
         ((equal? turno 3)
          (send (car cartas-jugador3) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car (caddr (recorrer (- turno 1) listaJugadores))))) (number->string (cadr (car (caddr (recorrer (- turno 1) listaJugadores))))) ".png"))))
-        ((> turno 3)
+        ((equal? turno 4)
+         (send (car cartas-crupier) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car (caddr crupier)))) (number->string (cadr (car (caddr crupier)))) ".png"))))
+        (else
+         (send (car cartas-jugador1) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car (caddr (recorrer 0 listaJugadores))))) (number->string (cadr (car (caddr (recorrer 0 listaJugadores))))) ".png")))
+         (send (car cartas-jugador2) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car (caddr (recorrer 1 listaJugadores))))) (number->string (cadr (car (caddr (recorrer 1 listaJugadores))))) ".png")))
+         (send (car cartas-jugador3) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car (caddr (recorrer 2 listaJugadores))))) (number->string (cadr (car (caddr (recorrer 2 listaJugadores))))) ".png")))
          (send (car cartas-crupier) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car (caddr crupier)))) (number->string (cadr (car (caddr crupier)))) ".png"))))
 ))
 
