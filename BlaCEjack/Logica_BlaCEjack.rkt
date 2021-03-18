@@ -295,7 +295,30 @@
     ;5. Si ambos crupier y jugador sacan lo mismo, gana el crupier.
     [else '()]))
 
+;; getAllScores
+;; Obtiene el nombre de todos los integrantes con su puntaje como string.
+;; Input: playersList - jugadores, crupier - casa.
+;; Output: Lista con el nombre de todos los integrantes con su puntaje como string.
+(define (getAllScores playersList crupier)
+  (cond ((null? playersList) (~a (getPlayerName crupier) " con " (getPlayerScore crupier) "."))
+         (append (~a (getPlayerName (car playersList)) " con "
+                     (getPlayerScore (car playersList)) ", "
+                     (getAllScores (cdr playersList) crupier)))))
 
+;; returnGameOver
+;; Retorna una tupla con los ganadores y el nombre de todos los integrantes con su puntaje como string.
+;; Input: playersList - jugadores, crupier - casa.
+;; Output: Tupla con los ganadores y el nombre de todos los integrantes con su puntaje como string.
+(define (returnGameOver playersList crupier)
+  (append (list (~a "Ganador(es): " (returnGameOver_aux (winners? playersList crupier))) (~a "Puntajes: " (getAllScores playersList crupier)))))
+(define (returnGameOver_aux winners)
+  (cond [(= 1 (length winners)) (~a ", " (returnGameOver_aux2 (car winners)) ".")]
+        [(~a (returnGameOver_aux2 (car winners)) (returnGameOver_aux (cdr winners)))]))
+(define (returnGameOver_aux2 pair)
+  (~a (car pair) " con "  (cadr pair)))
+
+
+ 
 
 ;-------------------Pruebas-------------------
 
@@ -367,9 +390,9 @@
 ;(drawCard (caddr listPlayers) listPlayers (shuffle deck))
 
 ;"Ganadores:"
+(returnGameOver listPlayers crupier)
+
 ;(winners? listPlayers crupier)
-
-
 
 
 
