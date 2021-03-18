@@ -12,8 +12,7 @@
 (provide drawCard)         ;; Parametros: jugador, lista del jugador, mazo.
 (provide updateScore)      ;; Parametros: lista de jugadores
 (provide updateAllPlayers) ;; Parametros: lista de jugadores
-(provide winners?)         ;; Parametros: jugadores y crupier con puntuacion actualizada.
-
+(provide returnGameOver)         ;; Parametros: jugadores y crupier con puntuacion actualizada.
 
 ;; #################################################################################
 ;; #################################################################################
@@ -300,9 +299,9 @@
 ;; Input: playersList - jugadores, crupier - casa.
 ;; Output: Lista con el nombre de todos los integrantes con su puntaje como string.
 (define (getAllScores playersList crupier)
-  (cond ((null? playersList) (~a (getPlayerName crupier) " con " (getPlayerScore crupier) "."))
-         (append (~a (getPlayerName (car playersList)) " con "
-                     (getPlayerScore (car playersList)) ", "
+  (cond ((null? playersList) (~a "\n\t" (getPlayerName crupier) "\t\tcon\t" (getPlayerScore crupier)))
+         (append (~a "\n\t" (getPlayerName (car playersList)) "\tcon\t"
+                     (getPlayerScore (car playersList))
                      (getAllScores (cdr playersList) crupier)))))
 
 ;; returnGameOver
@@ -310,15 +309,13 @@
 ;; Input: playersList - jugadores, crupier - casa.
 ;; Output: Tupla con los ganadores y el nombre de todos los integrantes con su puntaje como string.
 (define (returnGameOver playersList crupier)
-  (append (list (~a "Ganador(es): " (returnGameOver_aux (winners? playersList crupier))) (~a "Puntajes: " (getAllScores playersList crupier)))))
+  (append (list (~a "Ganador(es):" (returnGameOver_aux (winners? playersList crupier)))
+                (~a "Puntajes:" (getAllScores playersList crupier)))))
+
 (define (returnGameOver_aux winners)
-  (cond [(= 1 (length winners)) (~a ", " (returnGameOver_aux2 (car winners)) ".")]
-        [(~a (returnGameOver_aux2 (car winners)) (returnGameOver_aux (cdr winners)))]))
-(define (returnGameOver_aux2 pair)
-  (~a (car pair) " con "  (cadr pair)))
-
-
- 
+  (displayln winners)
+  (cond ((null? winners) "")
+        [else (~a "\n\t" (caar winners) "\tcon\t"  (cadar winners) (returnGameOver_aux (cdr winners)))]))             
 
 ;-------------------Pruebas-------------------
 
@@ -392,7 +389,7 @@
 ;"Ganadores:"
 (returnGameOver listPlayers crupier)
 
-;(winners? listPlayers crupier)
+;(returnGameOver_aux (winners? listPlayers crupier))
 
 
 

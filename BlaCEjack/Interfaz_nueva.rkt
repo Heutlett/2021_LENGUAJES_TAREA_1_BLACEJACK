@@ -127,7 +127,7 @@
 
 (define (mostrar-ganadores)
   (cond ((= turno 5)
-  (winners? (updateAllPlayers listaJugadores) (updateScore crupier)))))
+  (returnGameOver (updateAllPlayers listaJugadores) (updateScore crupier)))))
 
 (define (pedirCartaCrupier crupier mazo)
   (and (actualizarMazo (cdr mazo)) (actualizarCrupier (turno-crupier crupier  mazo))))
@@ -178,7 +178,7 @@
 ; Crea el marco ganadores
 (define Winnersframe (new frame%
                    [label "BlaCE Jack"]
-                   [width 400]
+                   [width 230]
                    [height 200]
                    ))
 
@@ -241,8 +241,12 @@
                           )
 
 ; Crea panel que contiene el lugar de los ganadores
-(define panel-ganadores-lbl (new horizontal-panel% [parent Winnersframe] [alignment '(center center)]))
-(define panel-ganadores (new horizontal-panel% [parent Winnersframe] [alignment '(center center)]))
+(define panel-ganadores-lbl (new horizontal-panel% [parent Winnersframe]
+                               ;  [stretchable-width #f][stretchable-height #f]
+                                [alignment '(left top)]))
+(define panel-ganadores (new horizontal-panel% [parent Winnersframe]
+                           ;  [stretchable-width #f][stretchable-height #f]
+                             [alignment '(left top)]))
 
 ;Mensajes del ganador
 (define lbl-ganadores (new message% [parent panel-ganadores-lbl] [label ""]))
@@ -658,15 +662,14 @@
         [(string? puntaje) "Black Jack"]))
 
 
+
+
 (define (verificarGane)
   (cond ((> turno 4)
-         (cond ((null? (cdr (mostrar-ganadores)))
-                (send lbl-ganadores set-label "EL GANADOR ES:")
-                (send msg-ganadores set-label (string-append (caar (mostrar-ganadores)) " con " (actPuntos_aux (cadar (mostrar-ganadores))))))
-               ( else
-                (send lbl-ganadores set-label "LOS GANADORES SON:")))
+         (send lbl-ganadores set-label (car (mostrar-ganadores)))
+         (send msg-ganadores set-label (cadr (mostrar-ganadores)))
          (send Winnersframe show #t))
-        ( else
+        (else
          (void))))
 ;-----------------------------------------------------------------
 
