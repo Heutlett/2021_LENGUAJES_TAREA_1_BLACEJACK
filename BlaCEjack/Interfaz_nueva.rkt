@@ -279,7 +279,8 @@
   (send Firstframe show #f)
   (send frame show #t)
   (actTurno)
-  (actPuntos))
+  (actPuntos)
+  (voltearActual))
 
 ; Crea botón "PEDIR"
 (new button% [parent panel-botones]
@@ -291,7 +292,8 @@
                          (boton-pedir listaJugadores mazo)
                          (actualizar_cartas listaJugadores)
                          (actTurno)
-                         (actPuntos))])
+                         (actPuntos)
+                         (voltearActual))])
 
 ; Crea botón "PLANTARSE"
 (new button% [parent panel-botones]
@@ -300,7 +302,8 @@
                          ;(send msg set-label "SE PLANTÓ")
                          (boton-plantarse)
                          (actTurno)
-                         (actPuntos))])
+                         (actPuntos)
+                         (voltearActual))])
 
 ;---------------------------------------------------------------------
 
@@ -537,14 +540,32 @@
 
 
 
-;; Funcion actualizar imagenes
+;; Función actualizar imagenes
 
-(define (llenar_cartas_jugador_aux cartasJugador espacios-cartas)
+(define (llenar_cartas_jugador_aux cartasJugador espacios-cartas primera)
   (cond ((null? cartasJugador)
          #t)
         (else
-         (send (car espacios-cartas) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car cartasJugador))) (number->string (cadr (car cartasJugador))) ".png") ))
-         (llenar_cartas_jugador_aux (cdr cartasJugador) (cdr espacios-cartas)))))
+         (cond ( (equal? primera 0)
+                 (send (car espacios-cartas) set-label (read-bitmap "cards/B0.png" ))
+                 (llenar_cartas_jugador_aux (cdr cartasJugador) (cdr espacios-cartas) 1))
+               ( else
+                 (send (car espacios-cartas) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car cartasJugador))) (number->string (cadr (car cartasJugador))) ".png") ))
+                 (llenar_cartas_jugador_aux (cdr cartasJugador) (cdr espacios-cartas) primera))))))
+
+
+;; Función para voltear la primera carta
+
+(define (voltearActual)
+  (cond ((equal? turno 1)
+         (send (car cartas-jugador1) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car (caddr (recorrer (- turno 1) listaJugadores))))) (number->string (cadr (car (caddr (recorrer (- turno 1) listaJugadores))))) ".png"))))
+        ((equal? turno 2)
+         (send (car cartas-jugador2) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car (caddr (recorrer (- turno 1) listaJugadores))))) (number->string (cadr (car (caddr (recorrer (- turno 1) listaJugadores))))) ".png"))))
+        ((equal? turno 3)
+         (send (car cartas-jugador3) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car (caddr (recorrer (- turno 1) listaJugadores))))) (number->string (cadr (car (caddr (recorrer (- turno 1) listaJugadores))))) ".png"))))
+        ((> turno 3)
+         (send (car cartas-crupier) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car (caddr crupier)))) (number->string (cadr (car (caddr crupier)))) ".png"))))
+))
 
 ;(read-bitmap "cards/C1.png" )
 
@@ -553,13 +574,13 @@
 
 (define (llenar_cartas_jugador jugador cartasJugador)
   (cond ((equal? jugador "jugador1")
-         (llenar_cartas_jugador_aux cartasJugador cartas-jugador1))
+         (llenar_cartas_jugador_aux cartasJugador cartas-jugador1 0))
         ((equal? jugador "jugador2")
-         (llenar_cartas_jugador_aux cartasJugador cartas-jugador2))
+         (llenar_cartas_jugador_aux cartasJugador cartas-jugador2 0))
         ((equal? jugador "jugador3")
-         (llenar_cartas_jugador_aux cartasJugador cartas-jugador3))
+         (llenar_cartas_jugador_aux cartasJugador cartas-jugador3 0))
         ((equal? jugador "crupier")
-         (llenar_cartas_jugador_aux cartasJugador cartas-crupier))))
+         (llenar_cartas_jugador_aux cartasJugador cartas-crupier 0))))
          
 
 
