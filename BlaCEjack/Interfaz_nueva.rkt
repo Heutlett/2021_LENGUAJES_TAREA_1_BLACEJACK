@@ -307,30 +307,30 @@
 
 
 ; Crea botón "PEDIR"
-(new button% [parent panel-botones]
-             [label "Pedir"]
-             [callback (lambda (button event)
-                         ;(send msg set-label "PIDIÓ CARTA")
-                         (actTurno)
-                         (actPuntos)
-                         (boton-pedir listaJugadores mazo)
-                         (actualizar_cartas listaJugadores)
-                         (actTurno)
-                         (actPuntos)
-                         (voltearActual)
-                         (verificarGane))])
+(define pedir (new button% [parent panel-botones]
+                   [label "Pedir"]
+                   [callback (lambda (button event)
+                               ;(send msg set-label "PIDIÓ CARTA")
+                               (actTurno)
+                               (actPuntos)
+                               (boton-pedir listaJugadores mazo)
+                               (actualizar_cartas listaJugadores)
+                               (actTurno)
+                               (actPuntos)
+                               (voltearActual)
+                               (verificarGane))]))
 
 ; Crea botón "PLANTARSE"
-(new button% [parent panel-botones]
-             [label "Plantarse"]
-             [callback (lambda (button event)
-                         ;(send msg set-label "SE PLANTÓ")
-                         (boton-plantarse)
-                         (actTurno)
-                         (actPuntos)
-                         (actualizar_cartas listaJugadores)
-                         (voltearActual)
-                         (verificarGane))])
+(define plantar (new button% [parent panel-botones]
+                     [label "Plantarse"]
+                     [callback (lambda (button event)
+                                 ;(send msg set-label "SE PLANTÓ")
+                                 (boton-plantarse)
+                                 (actTurno)
+                                 (actPuntos)
+                                 (actualizar_cartas listaJugadores)
+                                 (voltearActual)
+                                 (verificarGane))]))
 
 ; Crea botón "Nueva ronda"
 (new button% [parent panel-ganadores-bts]
@@ -347,7 +347,9 @@
 
 ;Función para reiniciar juego
 (define (reiniciar)
-  (reiniciar-aux (length listaJugadores)))
+  (reiniciar-aux (length listaJugadores))
+  (send plantar enable #t)
+  (send pedir set-label "Pedir"))
 
 ;FUnción auxiliar para reiniciar el juego
 (define (reiniciar-aux cantidad)
@@ -686,7 +688,9 @@
 (define (actTurno)
   (cond ((< 5 turno) (void))
         ((equal? turno 4)
-          (send lbl-turno set-label "Turno de: Crupier"))
+          (send lbl-turno set-label "Turno de: Crupier")
+          (send plantar enable #f)
+          (send pedir set-label "Jugar turno Crupier"))
         ((equal? turno 5)
           (send lbl-turno set-label "Juego finalizado"))
         (else
