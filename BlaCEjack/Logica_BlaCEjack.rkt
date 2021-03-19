@@ -232,6 +232,20 @@
   (cond ((null? playersList) '())
         [else (append (list (updateScore (car playersList))) (updateAllPlayers (cdr playersList)))]))
        
+;; getListOfAll
+;; Retorna la lista de todos los jugadores con el crupier integrado dentro.
+;; Input: playersList - jugadores, crupier - casa.
+;; Output: lista con todos.
+(define (getListOfAll playersList crupier)
+  (append playersList (list (setCrupierNameSpace crupier))))
+
+;; setCrupierNameSpace
+;; agrega espacios al nombre del crupier para mostrarlo al final, ordenado.
+;; Input: crupier - casa.
+;; Outpur: crupier con espacios en el nombre.
+(define (setCrupierNameSpace crupier)
+  (list "crupier " (getCardsTotalValue (getPlayerDeck crupier)) (getPlayerDeck crupier)))
+
 
 ;; visibleDeck
 ;; Retorna la puntuación de las visibles del jugador.
@@ -298,24 +312,59 @@
 ;; Obtiene el nombre de todos los integrantes con su puntaje como string.
 ;; Input: playersList - jugadores, crupier - casa.
 ;; Output: Lista con el nombre de todos los integrantes con su puntaje como string.
-(define (getAllScores playersList crupier)
-  (cond ((null? playersList) (~a "\n\t" (getPlayerName crupier) "\t\tcon\t" (getPlayerScore crupier)))
-         (append (~a "\n\t" (getPlayerName (car playersList)) "\tcon\t"
-                     (getPlayerScore (car playersList))
-                     (getAllScores (cdr playersList) crupier)))))
+(define (getAllScores listOfAll)
+  (cond ((null? listOfAll) "")
+         (append (~a "\n\t" (getPlayerName (car listOfAll)) "\tcon\t"
+                     (getPlayerScore (car listOfAll))
+                     (getAllScores (cdr listOfAll))))))
+
 
 ;; returnGameOver
 ;; Retorna una tupla con los ganadores y el nombre de todos los integrantes con su puntaje como string.
 ;; Input: playersList - jugadores, crupier - casa.
 ;; Output: Tupla con los ganadores y el nombre de todos los integrantes con su puntaje como string.
 (define (returnGameOver playersList crupier)
-  (append (list (~a "Ganador(es):" (returnGameOver_aux (winners? playersList crupier)))
-                (~a "Puntajes:" (getAllScores playersList crupier)))))
+  (append (list (~a "Ganador(es):" (returnGameOver_aux (winners? (quicksort playersList) crupier)))
+                (~a "Puntajes:" (getAllScores (quicksort (getListOfAll playersList crupier)))))))
 
 (define (returnGameOver_aux winners)
   (displayln winners)
   (cond ((null? winners) "")
         [else (~a "\n\t" (caar winners) "\tcon\t"  (cadar winners) (returnGameOver_aux (cdr winners)))]))             
+
+;---------------------------------------------------------------------------------
+;; Obtiene los menores de una lista basandose en un valor de comparacion.
+;; Param: Valor y la lista.
+;; Salida: Una lista con los elementos menores respecto al valor dado de parametro.
+(define (menores pivot listed)
+  (cond
+    ((null? listed) listed)
+    ((>= (getPlayerScore pivot) (getPlayerScore (car listed))) (cons (car listed) (menores pivot (cdr listed))))
+    (else (menores pivot (cdr listed)))
+  )
+)
+;; Obtiene los mayores de una lista basandose en un valor de comparacion.
+;; Param: Valor y la lista.
+;; Salida: Una lista con los elementos mayores respecto al valor dado de parametro.
+(define (mayores pivot listed)
+  (cond
+    ((null? listed) listed)
+    ((< (getPlayerScore pivot) (getPlayerScore (car listed))) (cons (car listed) (mayores pivot (cdr listed))))
+    (else (mayores pivot (cdr listed)))
+  )
+)
+;; Quicksort
+;; Param: Una lista
+;; Salida: Lista ordenada
+(define (quicksort listed)
+  (cond ((null? listed) listed)
+        (else (qs_aux (car listed) (cdr listed)))))
+(define (qs_aux pivot listed)
+  (cond
+    ((null? listed) (list pivot))
+    (else (append (quicksort (menores pivot listed)) (list pivot) (quicksort (mayores pivot listed))))
+  )
+)
 
 ;-------------------Pruebas-------------------
 
@@ -358,9 +407,9 @@
 ;(visibleDeck (caddr listPlayers))
 
 (define deck '((T 1) (D 2) (T 3) (C 4) (A 5)))
-(define listPlayers  '(("Player1" 20 ((D 7) (D 4) (D 8) (A 1)))
-                       ("Player2" 32 ((P 13) (T 2) (C 1) (D 9) (P 12)))
-                       ("Player3" 20 ((D 11) (C 8) (C 2)))
+(define listPlayers  '(("Player1" 1 ((D 7) (D 4) (D 8) (A 1)))
+                       ("Player2" 2 ((P 13) (T 2) (C 1) (D 9) (P 12)))
+                       ("Player3" 3 ((D 11) (C 8) (C 2)))
                        ))
 
 (define player '("Player3" "Nico-Nico-Ni" ((* *) (* *) (* *))))
