@@ -95,7 +95,8 @@
 ; jugador1.
 
 (define (iniciarJuego)
-  (aumentaTurno))
+  ;(aumentaTurno)
+  (set! turno 1))
 
 ; Funcion: boton-pedir
 ; Esta funcion es la accion del boton pedir en la interfaz, pedirá una carta para el jugador
@@ -247,6 +248,9 @@
 (define panel-ganadores (new horizontal-panel% [parent Winnersframe]
                            ;  [stretchable-width #f][stretchable-height #f]
                              [alignment '(left top)]))
+(define panel-ganadores-bts (new horizontal-panel% [parent Winnersframe]
+                           ;  [stretchable-width #f][stretchable-height #f]
+                             [alignment '(center bottom)]))
 
 ;Mensajes del ganador
 (define lbl-ganadores (new message% [parent panel-ganadores-lbl] [label ""]))
@@ -296,10 +300,12 @@
   (actualizar_cartas listaJugadores)
                          
   (send Firstframe show #f)
+  (send Winnersframe show #f)
   (send frame show #t)
   (actTurno)
   (actPuntos)
   (voltearActual))
+
 
 ; Crea botón "PEDIR"
 (new button% [parent panel-botones]
@@ -326,6 +332,31 @@
                          (actualizar_cartas listaJugadores)
                          (voltearActual)
                          (verificarGane))])
+
+; Crea botón "Nueva ronda"
+(new button% [parent panel-ganadores-bts]
+             [label "Nueva ronda"]
+             [callback (lambda (button event)
+                         (reiniciar))])
+
+; Crea botón "Salir"
+(new button% [parent panel-ganadores-bts]
+             [label "Salir"]
+             [callback (lambda (button event)
+                         (send Winnersframe show #f)
+                         (send frame show #f))])
+
+;Función para reiniciar juego
+(define (reiniciar)
+  (reiniciar-aux (length listaJugadores)))
+
+;FUnción auxiliar para reiniciar el juego
+(define (reiniciar-aux cantidad)
+  (iniciarJuego)
+  (set! listaJugadores '())
+  (set! crupier (crea-crupier))
+  (vaciar-cartas 10 cartas-jugador1 cartas-jugador2 cartas-jugador3 cartas-crupier)
+  (inicioInterfaz cantidad))
 
 ;---------------------------------------------------------------------
 
@@ -624,14 +655,24 @@
         (else
          (llenar_cartas_jugador (caar listaJugadores) (caddar listaJugadores))
          (actualizar_cartas (cdr listaJugadores)))))
-         
 
 
+(define (vaciar-cartas contador jugador1 jugador2 jugador3 crupier1)
+  (cond ((equal? 1 contador)
+         #t)
+        (else
+         (send (car jugador1) set-label (read-bitmap "cards/vacio.png"))
+         (send (car jugador2) set-label (read-bitmap "cards/vacio.png"))
+         (send (car jugador3) set-label (read-bitmap "cards/vacio.png"))
+         (send (car crupier1) set-label (read-bitmap "cards/vacio.png"))
+         (vaciar-cartas (- contador 1) (cdr jugador1) (cdr jugador2) (cdr jugador3) (cdr crupier1))
+         )))
 
 (encapsular-cartas-jugador1)
 (encapsular-cartas-jugador2)
 (encapsular-cartas-jugador3)
 (encapsular-cartas-crupier)
+
 
 
 ;======================INFORMACION================================
