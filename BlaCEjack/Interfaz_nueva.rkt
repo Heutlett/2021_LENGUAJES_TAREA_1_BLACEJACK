@@ -152,9 +152,8 @@
   (else
   (aumentaTurno))))
 
-; #############################################################################################
-; #############################################################################################
-
+; #########################################################
+; #########################################################
 
 
 
@@ -632,11 +631,8 @@
                 (send (car cartas-jugador1) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car (caddr (recorrer 0 listaJugadores))))) (number->string (cadr (car (caddr (recorrer 0 listaJugadores))))) ".png")))
                 (send (car cartas-crupier) set-label (read-bitmap (string-append "cards/" (symbol->string (car (car (caddr crupier)))) (number->string (cadr (car (caddr crupier)))) ".png"))))))))
 
-;(read-bitmap "cards/C1.png" )
 
-;; (string-append "cards/" (symbol->string (car carta)) (number->string (cadr carta)) ".png")
-;; (string-append "cards/" (symbol->string (car     (car cartasJugador)        )      ) (number->string (cadr (car cartasJugador))) ".png")
-
+;Función para llenar las cartas de un jugador
 (define (llenar_cartas_jugador jugador cartasJugador)
   (cond ((equal? jugador "jugador1")
          (llenar_cartas_jugador_aux cartasJugador cartas-jugador1 0))
@@ -648,7 +644,7 @@
          (llenar_cartas_jugador_aux cartasJugador cartas-crupier 0))))
          
 
-
+;FUnción que actualiza las imágenes de las cartas para todos los jugadores
 (define (actualizar_cartas listaJugadores)
   (cond ((null? listaJugadores)
          (llenar_cartas_jugador "crupier" (caddr crupier)))
@@ -656,7 +652,7 @@
          (llenar_cartas_jugador (caar listaJugadores) (caddar listaJugadores))
          (actualizar_cartas (cdr listaJugadores)))))
 
-
+;FUnción que vacía todos los espacios de las cartas
 (define (vaciar-cartas contador jugador1 jugador2 jugador3 crupier1)
   (cond ((equal? 1 contador)
          #t)
@@ -691,11 +687,13 @@
   (cond ((< 5 turno) (void))
         ((equal? turno 4)
           (send lbl-turno set-label "Turno de: Crupier"))
+        ((equal? turno 5)
+          (send lbl-turno set-label "Juego finalizado"))
         (else
           (send lbl-turno set-label (string-append "Turno de: Jugador " (number->string turno))))))
 
 (define (actPuntos)
-  (cond ((equal? turno 5) (send lbl-puntos set-label "Juego finalizado"))
+  (cond ((equal? turno 5) (send lbl-puntos set-label "Mostrando los resultados"))
         ((equal? turno 4) (send lbl-puntos set-label (string-append "Puntaje actual: " (actPuntos_aux (cadr crupier)))))
         (else (send lbl-puntos set-label (string-append "Puntaje actual: " (actPuntos_aux (cadr (recorrer (- turno 1) listaJugadores))))))))
 (define (actPuntos_aux puntaje)
@@ -704,7 +702,7 @@
 
 
 
-
+;Función para comprobar si el juego ha llegado a su fin y desplegar a los ganadores
 (define (verificarGane)
   (cond ((> turno 4)
          (send lbl-ganadores set-label (car (mostrar-ganadores)))
@@ -715,30 +713,5 @@
 ;-----------------------------------------------------------------
 
 
-; #################### pruebas
-
 (iniciarJuego)
-;
-;(actualizarListaJugadores (bCEj 3))
-;(setDeck)
-;(actualizarMazo (shuffle mazo))
-;
-;(actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
-;(actualizarMazo (cdddr mazo))
-;(actualizarListaJugadores (reparte-cartas listaJugadores  mazo))
-;(actualizarMazo (cdddr mazo))
-;
-;(actualizarCrupier (dar-carta crupier  mazo))
-;(actualizarMazo (cdr mazo))
-;(actualizarCrupier (dar-carta crupier  mazo))
-;(actualizarMazo (cdr mazo))
-;
-;
-;listaJugadores
-;crupier
-;
-;
-;(actualizar_cartas listaJugadores)
 
-;; (boton-pedir listaJugadores mazo)
-;; (actualizar_cartas listaJugadores)
