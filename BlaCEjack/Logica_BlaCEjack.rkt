@@ -339,7 +339,10 @@
 (define (menores pivot listed)
   (cond
     ((null? listed) listed)
-    ((equal? "Black-Jack" (getPlayerScore pivot)) (cons (car listed) (menores pivot (cdr listed))))
+    ;si el pivote es black jack
+    [(equal? "Black-Jack" (getPlayerScore pivot)) (cons (car listed) (menores pivot (cdr listed)))]
+    ;si el siguiente elemento es black jack
+    [(equal? "Black-Jack" (getPlayerScore (car listed))) (menores pivot (cdr listed))]
     ((>= (getPlayerScore pivot) (getPlayerScore (car listed))) (cons (car listed) (menores pivot (cdr listed))))
     (else (menores pivot (cdr listed)))
   )
@@ -350,7 +353,10 @@
 (define (mayores pivot listed)
   (cond
     ((null? listed) listed)
+    ;si el pivote es black jack
     ((equal? "Black-Jack" (getPlayerScore pivot)) (mayores pivot (cdr listed)))
+    ;si el siguiente elemento es black jack
+    [(equal? "Black-Jack" (getPlayerScore (car listed))) (cons (car listed) (mayores pivot (cdr listed)))]
     ((< (getPlayerScore pivot) (getPlayerScore (car listed))) (cons (car listed) (mayores pivot (cdr listed))))
     (else (mayores pivot (cdr listed)))
   )
@@ -364,7 +370,7 @@
 (define (qs_aux pivot listed)
   (cond
     ((null? listed) (list pivot))
-    (else (append (quicksort (menores pivot listed)) (list pivot) (quicksort (mayores pivot listed))))
+    (else (append (quicksort (mayores pivot listed)) (list pivot) (quicksort (menores pivot listed))))
   )
 )
 
@@ -409,13 +415,13 @@
 ;(visibleDeck (caddr listPlayers))
 
 (define deck '((T 1) (D 2) (T 3) (C 4) (A 5)))
-(define listPlayers  '(("Player1" 1 ((D 7) (D 4) (D 8) (A 1)))
-                       ("Player2" 2 ((P 13) (T 2) (C 1) (D 9) (P 12)))
-                       ("Player3" 3 ((D 11) (C 8) (C 2)))
+(define listPlayers  '(("Player1" 1 ((D 1) (A 10)))
+                       ("Player2" "Black-Jack" ((P 13) (T 2) (C 1) (D 9) (P 12)))
+                       ("Player3" 2 ((D 11) (C 8) (C 2)))
                        ))
 
 (define player '("Player3" "Nico-Nico-Ni" ((* *) (* *) (* *))))
-(define crupier  '("Crupier" 19 ((C 2) (P 2) (C 10))))
+(define crupier  '("Crupier"  "Black-Jack" ((C 1)(C 10))))
 
 
 ;"Jugadores:"
@@ -438,8 +444,10 @@
 ;(drawCard (caddr listPlayers) listPlayers (shuffle deck))
 
 ;"Ganadores:"
-(returnGameOver listPlayers crupier)
+;(returnGameOver listPlayers crupier)
 
+(getAllScores (quicksort (getListOfAll listPlayers crupier)))
+           
 ;(returnGameOver_aux (winners? listPlayers crupier))
 
 
