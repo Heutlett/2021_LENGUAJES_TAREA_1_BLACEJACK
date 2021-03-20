@@ -339,6 +339,7 @@
 (define (menores pivot listed)
   (cond
     ((null? listed) listed)
+    ((equal? "Black-Jack" (getPlayerScore pivot)) (cons (car listed) (menores pivot (cdr listed))))
     ((>= (getPlayerScore pivot) (getPlayerScore (car listed))) (cons (car listed) (menores pivot (cdr listed))))
     (else (menores pivot (cdr listed)))
   )
@@ -349,6 +350,7 @@
 (define (mayores pivot listed)
   (cond
     ((null? listed) listed)
+    ((equal? "Black-Jack" (getPlayerScore pivot)) (mayores pivot (cdr listed)))
     ((< (getPlayerScore pivot) (getPlayerScore (car listed))) (cons (car listed) (mayores pivot (cdr listed))))
     (else (mayores pivot (cdr listed)))
   )
